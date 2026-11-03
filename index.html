@@ -928,13 +928,13 @@ html.vt-run *{transition:none!important}
 .sched th,.sched td{padding:0; border-bottom:1px solid var(--line); border-inline-start:1px solid var(--line)}
 .sched th{padding:10px 2px; font-size:12px; font-weight:800; color:var(--ink2); background:var(--bg2)}
 .sched th.today{color:#fff; background:var(--accent)}
-.sched th:first-child,.sched td.pno{width:44px}
 .sched td.pno{ font-weight:800; color:var(--mut); background:var(--bg2); font-size:14px}
 .sched tr:last-child td{border-bottom:none}
 .sched .cell{display:block; width:100%; min-height:46px; padding:6px 4px; border:none; background:transparent; color:var(--ink); font:inherit; font-size:13px; font-weight:700; cursor:pointer; transition:background-color .2s; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .sched .cell:hover{background:color-mix(in srgb, var(--accent) 10%, transparent)}
 .sched .cell:empty::after{content:'+'; color:var(--mut); font-weight:400}
 .sched td.today{background:color-mix(in srgb, var(--accent) 6%, transparent)}
+.sched-tools[hidden],#schedDays[hidden]{display:none}
 .chip-row{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px}
 .chip{border:1px solid var(--line); background:var(--bg2); color:var(--ink); border-radius:999px; padding:7px 14px; font:inherit; font-size:14px; font-weight:700; cursor:pointer}
 .chip:hover{background:var(--accent); color:#fff; border-color:var(--accent)}
@@ -962,11 +962,11 @@ html.vt-run *{transition:none!important}
 .view-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin:26px 8px 12px}
 .view-head .view-title{margin:0}
 .sched-wrap{transition:box-shadow .3s}
-.sched .cell{pointer-events:none}
-.sched-wrap.editing .cell{pointer-events:auto}
-.sched-wrap.editing .sched{min-width:680px}
-.sched-wrap.editing .cell{min-height:68px; font-size:16px}
-.sched-wrap.editing th{padding:14px 4px; font-size:14px}
+.sched th:first-child,.sched td.pno{width:64px; font-size:12.5px}
+.sched td.pno.today{color:#fff; background:var(--accent)}
+.sched .cell{min-height:54px}
+.sched-tools{display:flex; gap:8px; justify-content:center; margin:12px 8px}
+.sched-tools .btn:disabled{opacity:.4; pointer-events:none}
 .sched-wrap.editing{box-shadow:0 0 0 2px var(--accent), var(--shadow)}
 .chip.sel{background:var(--accent); color:#fff; border-color:var(--accent)}
 .scope-label{font-size:13px; font-weight:700; color:var(--ink2); margin:2px 0 6px}
@@ -1028,6 +1028,23 @@ html.vt-run *{transition:none!important}
 .ok-ring{width:84px; height:84px; margin:4px auto 0; border-radius:50%; background:var(--accent); display:flex; align-items:center; justify-content:center; animation:popIn .6s cubic-bezier(.2,.8,.2,1) both}
 .ok-ring svg{width:44px; height:44px; fill:none; stroke:#fff; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:30; stroke-dashoffset:30; animation:okDraw .6s .3s ease forwards}
 @keyframes okDraw{to{stroke-dashoffset:0}}
+#viewSettings .set-card h3{font-size:19px}
+#viewSettings .set-card label{font-size:15px}
+#viewSettings .sub-row{font-size:16.5px; padding:11px 0}
+#viewSettings .set-note{font-size:14px}
+#viewSettings .btn{font-size:15.5px}
+#viewSettings .form-field{font-size:16.5px}
+#viewSettings .sub-badge{font-size:14.5px}
+.sub-badge.gray{background:color-mix(in srgb, var(--mut) 20%, transparent); color:var(--mut)}
+.sub-row.tap{cursor:pointer; align-items:center; border-radius:8px; transition:background .2s}
+.sub-row.tap:hover{background:color-mix(in srgb, var(--accent) 8%, transparent)}
+.sub-row .cd{color:var(--green); font-weight:800; font-size:.86em; margin-inline-start:8px}
+.sub-row .cd.low{color:var(--red)}
+.btn.up-big{display:flex; align-items:center; justify-content:center; text-align:center; font-size:17px; font-weight:800; min-height:46px}
+.di-line{display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); font-size:15.5px}
+.di-line:last-of-type{border-bottom:none}
+.di-line span:first-child{color:var(--ink2); font-weight:700}
+.di-line span:last-child{font-weight:800}
 .sub-badge.on{background:color-mix(in srgb, var(--green) 22%, transparent); color:var(--green)}
 .sub-badge.off{background:color-mix(in srgb, var(--red) 20%, transparent); color:var(--red)}
 
@@ -1137,7 +1154,10 @@ body.onb-lock{overflow:hidden}
       </button>
     </div>
     <div class="sched-wrap" id="schedWrap"><table class="sched" id="schedTable"></table></div>
-    <p class="set-note" style="margin:10px 8px">اضغط «تعديل» لتكبير الجدول وتسمية الحصص. يُحفظ الجدول في جهازك فقط.</p>
+    <div class="sched-tools" id="schedTools" hidden>
+      <button class="btn" id="schedRemove" onclick="schedChangeCount(-1)">إزالة حصة</button>
+      <button class="btn" id="schedAdd" onclick="schedChangeCount(1)">إضافة حصة</button>
+    </div>
   </div>
 
   <div class="view" id="viewSettings" hidden>
@@ -1204,13 +1224,24 @@ body.onb-lock{overflow:hidden}
     <div class="up-price"><b>100</b> ر.س <span>للسنة الدراسية</span></div>
     <ul class="up-list"><li>شعب وأسماء بلا حدود</li><li>بياناتك الحالية تبقى كما هي</li><li>يُفعَّل بكود خاص بجهازك</li></ul>
     <div class="up-warn">رسوم الاشتراك غير مستردة، ويُنظر في أي طلب استرجاع بعد مرور فترة من الاشتراك.</div>
-    <button class="btn primary" style="width:100%; margin:12px 0" onclick="openSubNotice()">اشتراك</button>
+    <button class="btn primary up-big" style="width:100%; margin:12px 0" onclick="openSubNotice()">اشتراك</button>
     <details class="up-have"><summary>لدي كود التفعيل</summary>
       <textarea class="form-field" id="upCode" rows="3" placeholder="الصق الكود هنا" autocomplete="off" spellcheck="false" style="min-height:70px; direction:ltr; text-align:left; font-size:12px; margin-top:8px"></textarea>
       <p class="up-err" id="upErr" hidden></p>
-      <button class="btn primary" style="width:100%" onclick="activateCode()">تفعيل</button>
+      <button class="btn primary up-big" style="width:100%" onclick="activateCode()">تفعيل</button>
     </details>
     <div class="modal-actions"><button class="btn" onclick="closeModal('upgradeModal')">إغلاق</button></div>
+  </div>
+</div>
+
+<div class="modal" id="dateInfoModal" hidden>
+  <div class="modal-content">
+    <h3 id="diTitle"></h3>
+    <div id="diBody"></div>
+    <div class="modal-actions" style="margin-top:12px">
+      <button class="btn primary" onclick="closeModal('dateInfoModal')">تم</button>
+      <button class="btn" onclick="closeModal('dateInfoModal')">إغلاق</button>
+    </div>
   </div>
 </div>
 
@@ -1255,9 +1286,10 @@ body.onb-lock{overflow:hidden}
     <input class="form-field" id="schedInput" maxlength="20" placeholder="اسم الحصة" autocomplete="off">
     <div class="scope-label">تطبيق على</div>
     <div class="chip-row" id="schedScope">
-      <button type="button" class="chip sel" data-scope="day">هذا اليوم فقط</button>
-      <button type="button" class="chip" data-scope="week">كل أيام الأسبوع</button>
+      <button type="button" class="chip" data-scope="week">كل الأسبوع</button>
+      <button type="button" class="chip sel" data-scope="days">أيام محددة</button>
     </div>
+    <div class="chip-row" id="schedDays"></div>
     <div class="modal-actions">
       <button class="btn" id="schedSave">حفظ</button>
       <button class="btn danger" id="schedClear">مسح</button>
@@ -2965,7 +2997,9 @@ function openBackupDialog(){
 async function createBackup(){
   const now = Date.now();
   try{
-    const text = JSON.stringify(Object.assign({}, state, { lastBackup: now }));
+    const ext = {};
+    try{ ext.license = localStorage.getItem(LIC_KEY); ext.device = localStorage.getItem(DEV_KEY); ext.schedule = localStorage.getItem('gradesheet_schedule'); ext.profile = localStorage.getItem('gradesheet_profile'); }catch(e){}
+    const text = JSON.stringify(Object.assign({}, state, { lastBackup: now, _ext: ext }));
     const d = new Date();
     const fname = 'grades-backup-' + d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + '.json';
     let done = false;
@@ -3007,6 +3041,13 @@ $('restoreFileInput').addEventListener('change', async (e) => {
     const data = JSON.parse(text);
     if(!Array.isArray(data.sections) || !Array.isArray(data.columns)) throw 0;
     showConfirm('استعادة نسخة', 'هل متأكد من استعادة النسخة؟ سيتم استبدال كل البيانات الحالية', () => {
+      const ext = data._ext || {}; delete data._ext;
+      try{
+        if(ext.device) localStorage.setItem(DEV_KEY, ext.device);
+        if(ext.license) localStorage.setItem(LIC_KEY, ext.license);
+        if(ext.schedule) localStorage.setItem('gradesheet_schedule', ext.schedule);
+        if(ext.profile && !localStorage.getItem('gradesheet_profile')) localStorage.setItem('gradesheet_profile', ext.profile);
+      }catch(e){}
       state = data;
       migrateColumns(state);
       migrateTotals();
@@ -3023,7 +3064,8 @@ $('restoreFileInput').addEventListener('change', async (e) => {
       });
       save();
       closeModal('backupModal');
-      render();
+      if(ext.license || ext.device){ try{ initLicense(); }catch(e){} }
+      render(); renderSchedule();
       notify('تمت استعادة النسخة');
     });
   }catch(err){ e.target.value = ''; notify('الملف غير صالح'); }
@@ -3136,47 +3178,68 @@ function showView(v){
 
 /* ===== جدول الحصص ===== */
 const SCHED_DAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
-const SCHED_PERIODS = 7;
+const SCHED_MIN = 1, SCHED_MAX = 12;
 function loadSched(){ try{ return JSON.parse(localStorage.getItem('gradesheet_schedule') || '{}') || {}; }catch(e){ return {}; } }
 function saveSched(o){ try{ localStorage.setItem('gradesheet_schedule', JSON.stringify(o)); }catch(e){} }
+function schedCount(){ const n = parseInt(loadSched()._n, 10); return n >= SCHED_MIN && n <= SCHED_MAX ? n : 7; }
 function renderSchedule(){
-  const data = loadSched(), today = new Date().getDay(); // 0 = الأحد
+  const data = loadSched(), today = new Date().getDay(), N = schedCount();
   const t = $('schedTable'); t.textContent = '';
   const head = t.insertRow();
-  const th0 = document.createElement('th'); th0.textContent = 'الحصة'; head.appendChild(th0);
-  SCHED_DAYS.forEach((d, i) => { const th = document.createElement('th'); th.textContent = d; if(i === today) th.className = 'today'; head.appendChild(th); });
-  for(let p = 0; p < SCHED_PERIODS; p++){
+  const th0 = document.createElement('th'); th0.textContent = 'اليوم'; head.appendChild(th0);
+  for(let p = 0; p < N; p++){ const th = document.createElement('th'); th.textContent = AR_DIGITS[p + 1]; head.appendChild(th); }
+  SCHED_DAYS.forEach((d, i) => {
     const tr = t.insertRow();
-    const n = tr.insertCell(); n.className = 'pno'; n.textContent = AR_DIGITS[p + 1];
-    SCHED_DAYS.forEach((d, i) => {
+    const n = tr.insertCell(); n.className = 'pno' + (i === today ? ' today' : ''); n.textContent = d;
+    for(let p = 0; p < N; p++){
       const td = tr.insertCell(); if(i === today) td.className = 'today';
       const b = document.createElement('button'); b.type = 'button'; b.className = 'cell';
       b.textContent = data[i + '_' + p] || '';
       b.setAttribute('aria-label', d + ' الحصة ' + (p + 1));
       b.onclick = () => openSchedCell(i, p);
       td.appendChild(b);
-    });
-  }
+    }
+  });
+  $('schedWrap').style.setProperty('--np', N);
+  const rm = $('schedRemove'), ad = $('schedAdd');
+  if(rm) rm.disabled = N <= SCHED_MIN; if(ad) ad.disabled = N >= SCHED_MAX;
 }
 let schedEdit = false;
 function toggleSchedEdit(){
   schedEdit = !schedEdit;
+  $('schedTools').hidden = !schedEdit;
   $('schedWrap').classList.toggle('editing', schedEdit);
   $('schedEditBtn').querySelector('span').textContent = schedEdit ? 'تم' : 'تعديل';
+}
+function schedChangeCount(delta){
+  const d = loadSched(), N = schedCount(), M = N + delta;
+  if(M < SCHED_MIN || M > SCHED_MAX) return;
+  if(delta < 0){ SCHED_DAYS.forEach((_, i) => delete d[i + '_' + (N - 1)]); }
+  d._n = M; saveSched(d); renderSchedule();
 }
 function openSchedCell(day, period){
   const data = loadSched(), key = day + '_' + period;
   $('schedTitle').textContent = SCHED_DAYS[day] + ' — الحصة ' + AR_DIGITS[period + 1];
   const inp = $('schedInput'); inp.value = data[key] || '';
-  let scope = 'day';
-  const chips = $('schedScope').querySelectorAll('.chip');
-  chips.forEach(c => {
-    c.classList.toggle('sel', c.dataset.scope === 'day');
-    c.onclick = () => { scope = c.dataset.scope; chips.forEach(x => x.classList.toggle('sel', x === c)); };
+  let scope = 'days', picked = new Set([day]);
+  const chips = $('schedScope').querySelectorAll('.chip'), dayRow = $('schedDays');
+  const paint = () => {
+    chips.forEach(c => c.classList.toggle('sel', c.dataset.scope === scope));
+    dayRow.hidden = scope !== 'days';
+    dayRow.querySelectorAll('.chip').forEach(c => c.classList.toggle('sel', picked.has(+c.dataset.day)));
+  };
+  chips.forEach(c => c.onclick = () => { scope = c.dataset.scope; paint(); });
+  dayRow.textContent = '';
+  SCHED_DAYS.forEach((nm, i) => {
+    const c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.dataset.day = i; c.textContent = nm;
+    c.onclick = () => { if(picked.has(i)){ if(picked.size > 1) picked.delete(i); } else picked.add(i); paint(); };
+    dayRow.appendChild(c);
   });
+  paint();
   const done = (val) => {
     const d = loadSched();
-    const days = scope === 'week' ? SCHED_DAYS.map((_, i) => i) : [day];
+    const days = scope === 'week' ? SCHED_DAYS.map((_, i) => i) : [...picked];
+    if(!val) days.push(day);
     days.forEach(i => { const k = i + '_' + period; if(val) d[k] = val; else delete d[k]; });
     saveSched(d); closeModal('schedModal'); renderSchedule();
   };
@@ -3384,34 +3447,60 @@ async function verifyCode(code){
 function readLic(){ try{ return JSON.parse(localStorage.getItem(LIC_KEY) || 'null'); }catch(e){ return null; } }
 function applyLic(info){
   if(!info) lic = {status:'free'};
-  else lic = {status: ymd() <= info.e ? 'active' : 'expired', s:info.s, e:info.e};
+  else lic = {status: ymd() <= info.e ? 'active' : 'expired', s:info.s, e:info.e, at:info.at || 0};
   renderSubscription();
 }
 function initLicense(){
   deviceNo();
   const st = readLic();
-  if(st && st.code){ applyLic({s:st.s, e:st.e}); verifyCode(st.code).then(r => { if(r.ok) applyLic(r); else { try{ localStorage.removeItem(LIC_KEY); }catch(e){} applyLic(null); } }); }
+  if(st && st.code){ applyLic({s:st.s, e:st.e, at:st.at}); verifyCode(st.code).then(r => { if(r.ok) applyLic({s:r.s, e:r.e, at:st.at}); else { try{ localStorage.removeItem(LIC_KEY); }catch(e){} applyLic(null); } }); }
   else applyLic(null);
 }
 function isPaid(){ return lic.status === 'active'; }
 function daysLeft(){ return Math.max(0, Math.ceil((ymdDate(lic.e) - ymdDate(ymd())) / 86400000)); }
+function fmtNum(n){ n = String(n); return n.slice(0,4) + '/' + n.slice(4,6) + '/' + n.slice(6,8); }
+function openDateInfo(kind){
+  if(lic.status === 'free') return;
+  const start = kind === 'start', n = start ? lic.s : lic.e, d = ymdDate(n);
+  let hj = '', gr = '', tm = '—';
+  try{ hj = d.toLocaleDateString('ar-SA-u-ca-islamic-umalqura', {weekday:'long', day:'numeric', month:'long', year:'numeric'}); }catch(e){}
+  try{ gr = d.toLocaleDateString('ar-SA-u-ca-gregory', {day:'numeric', month:'long', year:'numeric'}); }catch(e){}
+  if(start){ if(lic.at){ try{ tm = new Date(lic.at).toLocaleTimeString('ar-SA', {hour:'numeric', minute:'2-digit'}); }catch(e){} } }
+  else tm = 'نهاية اليوم';
+  $('diTitle').textContent = start ? 'أنت مشترك منذ' : 'ينتهي اشتراكك في';
+  $('diBody').innerHTML = '<div class="di-line"><span>الهجري</span><span>' + hj + '</span></div>' +
+    '<div class="di-line"><span>الميلادي</span><span>' + gr + '</span></div>' +
+    '<div class="di-line"><span>الوقت</span><span>' + tm + '</span></div>';
+  openModal('dateInfoModal');
+}
+function openRestoreSub(){
+  openUpgrade('');
+  const dt = $('upgradeModal').querySelector('details'); if(dt) dt.open = true;
+}
 function renderSubscription(){
   const c = $('subCard'); if(!c) return;
-  const free = lic.status === 'free', exp = lic.status === 'expired';
-  const badge = lic.status === 'active' ? '<span class="sub-badge on">مفعّل</span>' : exp ? '<span class="sub-badge off">منتهي</span>' : '<span class="sub-badge">النسخة المجانية</span>';
+  const free = lic.status === 'free', exp = lic.status === 'expired', on = lic.status === 'active';
+  const badge = on ? '<span class="sub-badge on">مشترك</span>' : exp ? '<span class="sub-badge off">منتهي</span>' : '<span class="sub-badge gray">غير مشترك</span>';
+  const dl = on ? daysLeft() : 0;
   c.innerHTML = '<h3>الاشتراك</h3>' +
     '<div class="sub-row"><span>الحالة</span><span>' + badge + '</span></div>' +
-    '<div class="sub-row"><span>الحد المتاح</span><span>' + (isPaid() ? 'بلا حدود' : 'شعبة واحدة · حتى ' + FREE_NAMES + ' اسماً') + '</span></div>' +
-    '<div class="sub-row"><span>تاريخ البدء</span><span>' + (free ? '—' : fmtYmd(lic.s)) + '</span></div>' +
-    '<div class="sub-row"><span>تاريخ الانتهاء</span><span>' + (free ? '—' : fmtYmd(lic.e)) + '</span></div>' +
-    (isPaid() ? '<div class="sub-row"><span>المتبقي</span><span>' + daysLeft() + ' يوماً</span></div>' : '') +
+    '<div class="sub-row"><span>الحد المتاح</span><span>' + (on ? 'بلا حدود' : 'شعبة واحدة · حتى ' + FREE_NAMES + ' اسماً') + '</span></div>' +
+    '<div class="sub-row' + (free ? '' : ' tap') + '" id="rowStart"><span>تاريخ الاشتراك</span><span style="direction:ltr">' + (free ? '—' : fmtNum(lic.s)) + '</span></div>' +
+    '<div class="sub-row' + (free ? '' : ' tap') + '" id="rowEnd"><span>الاشتراك ينتهي</span><span style="direction:ltr">' + (free ? '—' : fmtNum(lic.e)) +
+      (on ? '<span class="cd' + (dl <= 14 ? ' low' : '') + '" style="direction:rtl;display:inline-block">(باقي ' + dl + ' يوماً)</span>' : '') + '</span></div>' +
     '<div class="sub-row"><span>رقم طلب الجهاز</span><span style="direction:ltr">' + deviceNo() + '</span></div>' +
     '<div class="set-actions" style="margin-top:12px"></div>';
+  const rs = $('rowStart'), re = $('rowEnd');
+  if(!free){ rs.onclick = () => openDateInfo('start'); re.onclick = () => openDateInfo('end'); }
   const act = c.querySelector('.set-actions');
-  const b = document.createElement('button'); b.className = 'btn' + (isPaid() ? '' : ' primary');
-  if(isPaid()){ b.textContent = 'إلغاء الاشتراك'; b.onclick = cancelLicense; }
+  const b = document.createElement('button'); b.className = 'btn' + (on ? '' : ' primary');
+  if(on){ b.textContent = 'إلغاء الاشتراك'; b.onclick = cancelLicense; }
   else { b.textContent = exp ? 'تجديد الاشتراك' : 'اشتراك'; b.onclick = () => openUpgrade(''); }
   act.appendChild(b);
+  if(!on){
+    const r = document.createElement('button'); r.className = 'btn'; r.textContent = 'استعادة الاشتراك'; r.onclick = openRestoreSub;
+    act.appendChild(r);
+  }
 }
 function openUpgrade(reason){
   $('upReason').textContent = reason || '';
@@ -3438,8 +3527,8 @@ async function activateCode(){
     err.hidden = false; return;
   }
   if(ymd() > r.e){ err.textContent = 'انتهت مدة هذا الكود.'; err.hidden = false; return; }
-  try{ localStorage.setItem(LIC_KEY, JSON.stringify({code: $('upCode').value.replace(/\s+/g,''), s:r.s, e:r.e})); }catch(e){}
-  applyLic(r); closeModal('upgradeModal');
+  try{ localStorage.setItem(LIC_KEY, JSON.stringify({code: $('upCode').value.replace(/\s+/g,''), s:r.s, e:r.e, at:Date.now()})); }catch(e){}
+  applyLic({s:r.s, e:r.e, at:Date.now()}); closeModal('upgradeModal');
   $('actText').textContent = 'شكراً لك! فُتحت لك كل الميزات حتى ' + fmtYmd(r.e) + '.';
   openModal('activatedModal'); render();
 }
