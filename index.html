@@ -956,14 +956,9 @@ html.vt-run *{transition:none!important}
   height:calc(env(safe-area-inset-top,0px) + var(--top-1));
   background:color-mix(in srgb, var(--bg) 72%, transparent);
   -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
-  box-shadow:0 2px 6px rgba(0,0,0,.06);
+  -webkit-mask-image:linear-gradient(#000 62%, transparent); mask-image:linear-gradient(#000 62%, transparent);
 }
 /* ألوان الأعمدة في الوضع الداكن */
-:root[data-theme="dark"] th.col-act,:root[data-theme="dark"] th.col-par{background:#2c4a3f}
-:root[data-theme="dark"] th.col-hw{background:#55303a}
-:root[data-theme="dark"] th.col-tot{background:#57422a}
-:root[data-theme="dark"] th.col-t1{background:#4e4b2a}
-:root[data-theme="dark"] th.col-t2,:root[data-theme="dark"] th.col-att{background:#2a475a}
 .view-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin:26px 8px 12px}
 .view-head .view-title{margin:0}
 .sched-wrap{transition:box-shadow .3s}
@@ -1035,6 +1030,13 @@ html.vt-run *{transition:none!important}
 @keyframes okDraw{to{stroke-dashoffset:0}}
 .sub-badge.on{background:color-mix(in srgb, var(--green) 22%, transparent); color:var(--green)}
 .sub-badge.off{background:color-mix(in srgb, var(--red) 20%, transparent); color:var(--red)}
+
+/* شريط التحديد داخل بطاقة الشعبة */
+.sel-inline{display:flex; flex-wrap:wrap; align-items:center; gap:8px; background:var(--red); color:#fff; border-radius:16px; padding:9px 12px; margin:8px 0 4px; font-weight:700; font-size:14px; animation:riseIn .35s cubic-bezier(.2,.8,.2,1) both}
+.sel-inline .count{background:rgba(255,255,255,.25); padding:3px 10px; border-radius:999px; font-size:13px}
+.sel-inline button{background:transparent; border:1px solid rgba(255,255,255,.55); color:#fff; padding:6px 13px; border-radius:999px; font:inherit; font-weight:700; font-size:13px; cursor:pointer; transition:transform .25s cubic-bezier(.2,.8,.2,1), background-color .2s}
+.sel-inline button:active{transform:scale(.93)}
+@media (hover:hover){.sel-inline button:hover{background:rgba(255,255,255,.18)}}
 </style>
 </head>
 <body>
@@ -1059,9 +1061,9 @@ html.vt-run *{transition:none!important}
     </button>
     <div class="menu-dropdown" id="menuDropdown" hidden>
       
-      <button onclick="closeMenu();createBackup()">
-        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        إنشاء نسخة
+      <button onclick="closeMenu();openFontDialog(-1)">
+        <svg viewBox="0 0 24 24"><path d="M5 20l7-16 7 16"/><path d="M8 14h8"/></svg>
+        تنسيق الخطوط
       </button>
       
       <button onclick="closeMenu();openColorsDialog()">
@@ -1110,7 +1112,7 @@ html.vt-run *{transition:none!important}
     <div class="set-card">
       <h3>الملف الشخصي</h3>
       <label for="teacherName">اسم المعلم (اختياري)</label>
-      <input class="form-field" id="teacherName" maxlength="40" placeholder="يظهر في التحية فقط" autocomplete="off" oninput="saveTeacherName(this.value)">
+      <input class="form-field" id="teacherName" maxlength="40" placeholder="" autocomplete="off" oninput="saveTeacherName(this.value)">
       <p class="set-note">يُحفظ الاسم في جهازك فقط، وإذا تركته فارغاً تظهر التحية بدون اسم.</p>
       <label style="margin-top:14px">المرحلة الدراسية</label>
       <div class="chip-row" id="stageChips">
@@ -1122,10 +1124,10 @@ html.vt-run *{transition:none!important}
     <div class="set-card">
       <h3>البيانات</h3>
       <div class="set-actions" style="flex-direction:column">
+        <button class="btn" onclick="createBackup()">إنشاء نسخة</button>
         <button class="btn" onclick="document.getElementById('restoreFileInput').click()">استعادة نسخة</button>
         <button class="btn danger" onclick="confirmClearAllRecords()">مسح البيانات</button>
       </div>
-      <p class="set-note">«إنشاء نسخة» و«تغيير الألوان» في قائمة الثلاث خطوط.</p>
     </div>
   </div>
 </main>
@@ -1297,7 +1299,7 @@ html.vt-run *{transition:none!important}
 
 <div class="modal" id="fontModal" hidden>
   <div class="modal-content">
-    <h3>تنسيق الخطوط — شعبة <span id="fontSectionName"></span></h3>
+    <h3>تنسيق الخطوط — <span id="fontSectionName"></span></h3>
     <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:14px">
       <label style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
         <span style="min-width:80px; font-size:13px; color:var(--mut)">نوع الخط:</span>
@@ -1404,13 +1406,13 @@ html.vt-run *{transition:none!important}
 const STORAGE_KEY = 'gradesheet_v4';
 
 const DEFAULT_COLUMNS = [
-  { key:'act', title:'نشاط', max:'15', color:'#e9ece4', type:'number' },
-  { key:'par', title:'مشاركة',    max:'10', color:'#e9ece4', type:'number' },
-  { key:'hw',  title:'واجب',      max:'15', color:'#f4dadd', type:'number' },
-  { key:'tot', title:'المجموع',    max:'40',    color:'#f5dcc8', type:'total'  },
-  { key:'t1',  title:'اختبار 1', max:'20', color:'#f2eecf', type:'number' },
-  { key:'t2',  title:'اختبار 2',max:'20', color:'#cfe2ee', type:'number' },
-  { key:'att', title:'تحضير',                    color:'#cfe2ee', type:'attendance' }
+  { key:'act', title:'نشاط', max:'15', color:'#e8e8e8', type:'number' },
+  { key:'par', title:'مشاركة',    max:'10', color:'#e8e8e8', type:'number' },
+  { key:'hw',  title:'واجب',      max:'15', color:'#e8e8e8', type:'number' },
+  { key:'tot', title:'المجموع',    max:'40',    color:'#e8e8e8', type:'total'  },
+  { key:'t1',  title:'اختبار 1', max:'20', color:'#e8e8e8', type:'number' },
+  { key:'t2',  title:'اختبار 2',max:'20', color:'#e8e8e8', type:'number' },
+  { key:'att', title:'تحضير',                    color:'#e8e8e8', type:'attendance' }
 ];
 
 const DEFAULT_SECTIONS = ['101'];
@@ -1420,7 +1422,6 @@ DEFAULT_COLUMNS.forEach(c => { DEFAULT_COL_COLORS[c.key] = c.color; });
 const DARK_COL_COLORS = { act:'#2c4a3f', par:'#2c4a3f', hw:'#55303a', tot:'#57422a', t1:'#4e4b2a', t2:'#2a475a', att:'#2a475a' };
 function isDarkTheme(){ return document.documentElement.getAttribute('data-theme') === 'dark'; }
 function colColor(col){
-  if(isDarkTheme() && col.color === DEFAULT_COL_COLORS[col.key]) return DARK_COL_COLORS[col.key] || '#2d3835';
   return col.color || '#ffffff';
 }
 function toHex6(c){
@@ -1728,9 +1729,9 @@ function buildSectionCard(section, si){
   const top = document.createElement('div');
   top.className = 'section-top-actions';
   top.innerHTML = `
-    <button class="btn" onclick="toggleTools(${si})">
-      <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      تعديل
+    <button class="btn" onclick="enterSelectMode(${si})">
+      <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      تحديد للحذف
     </button>
     <button class="btn primary" onclick="addStudent(${si})">
       <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -1742,25 +1743,17 @@ function buildSectionCard(section, si){
   `;
   card.appendChild(top);
 
-  const tools = document.createElement('div');
-  tools.className = 'tools-panel';
-  tools.id = 'tools_' + si;
-  tools.hidden = !openedTools.has(si);
-  tools.innerHTML = `
-    <button class="tool-btn" onclick="openFontDialog(${si})">
-      <svg viewBox="0 0 24 24"><path d="M5 20l7-16 7 16"/><path d="M8 14h8"/></svg>
-      تنسيق الخطوط
-    </button>
-    <button class="tool-btn" onclick="enterSelectMode(${si})">
-      <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      تحديد للحذف
-    </button>
-    <button class="tool-btn danger" onclick="confirmDeleteAllStudents(${si})">
-      <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-      حذف كل الطلاب
-    </button>
-  `;
-  card.appendChild(tools);
+  if(selectModeSections.has(si)){
+    const cnt = Object.keys(selectedStudents).filter(k => k.split('-')[0] === String(si)).length;
+    const sb = document.createElement('div');
+    sb.className = 'sel-inline';
+    sb.innerHTML = '<span>وضع التحديد</span><span class="count sel-count">' + cnt + ' محدد</span>' +
+      '<button onclick="selectAllStudents()">تحديد الكل</button>' +
+      '<button onclick="deleteSelectedStudents()">حذف المحددين</button>' +
+      '<button onclick="confirmDeleteAllStudents(' + si + ')">حذف كل الطلاب</button>' +
+      '<button onclick="exitSelectMode()">إلغاء</button>';
+    card.appendChild(sb);
+  }
 
   if(searchOpen.has(si)) card.appendChild(buildSearchRow(si));
 
@@ -2017,7 +2010,7 @@ function openSearch(si){
   if(!card || card.querySelector('.search-row')) return;
   searchOpen.add(si);
   const sr = buildSearchRow(si);
-  const anchor = card.querySelector('.tools-panel') || card.querySelector('.section-top-actions');
+  const anchor = card.querySelector('.sel-inline') || card.querySelector('.section-top-actions');
   anchor.after(sr);
   sr.querySelector('input').focus();
 }
@@ -2111,7 +2104,7 @@ function confirmDeleteStudent(si, ri){
     save();
     render();
     notify('تم حذف الطالب', 'del');
-  });
+  }, true);
 }
 
 /* ===== وضع التحديد ===== */
@@ -2144,9 +2137,8 @@ function toggleStudentSelection(si, ri){
 function updateSelectBar(){
   const bar = $('selectModeBar');
   const count = Object.keys(selectedStudents).length;
-  if(selectModeSections.size === 0){ bar.hidden = true; return; }
-  bar.hidden = false;
-  $('selectCount').textContent = count + ' محدد';
+  bar.hidden = true;
+  document.querySelectorAll('.sel-count').forEach(el => { el.textContent = count + ' محدد'; });
 }
 function deleteSelectedStudents(){
   const keys = Object.keys(selectedStudents);
@@ -2485,8 +2477,8 @@ function saveColors(){
 /* ===== تنسيق الخطوط ===== */
 function openFontDialog(si){
   editingSection = si;
-  const f = state.sections[si].font || {};
-  $('fontSectionName').textContent = state.sections[si].sec;
+  const f = (state.sections[si < 0 ? 0 : si] || {}).font || {};
+  $('fontSectionName').textContent = si < 0 ? 'كل الشعب' : state.sections[si].sec;
   $('fontFamily').value = f.family || '';
   $('fontSize').value = f.size || 14;
   $('fontSizeVal').textContent = (f.size || 14) + 'px';
@@ -2495,11 +2487,9 @@ function openFontDialog(si){
 }
 function previewFont(){ $('fontSizeVal').textContent = $('fontSize').value + 'px'; }
 function saveFont(){
-  state.sections[editingSection].font = {
-    family: $('fontFamily').value,
-    size: +$('fontSize').value,
-    weight: +$('fontWeight').value
-  };
+  const nf = { family: $('fontFamily').value, size: +$('fontSize').value, weight: +$('fontWeight').value };
+  if(editingSection < 0) state.sections.forEach(sec => { sec.font = Object.assign({}, nf); });
+  else state.sections[editingSection].font = nf;
   save();
   closeModal('fontModal');
   render();
@@ -2969,7 +2959,8 @@ $('restoreFileInput').addEventListener('change', async (e) => {
 });
 
 /* ===== تأكيد ===== */
-function showConfirm(title, text, onYes){
+function showConfirm(title, text, onYes, dismissable){
+  $('confirmModal').dataset.dismiss = dismissable ? '1' : '';
   $('confirmTitle').textContent = title;
   $('confirmText').innerHTML = text;
   $('confirmYesBtn').onclick = () => { closeModal('confirmModal'); onYes(); };
@@ -3336,6 +3327,15 @@ function cancelLicense(){
 }
 const REASON_SECTION = 'النسخة المجانية تتسع لشعبة واحدة فقط. رقّ للنسخة السنوية لإضافة شعب أخرى.';
 const REASON_NAMES = 'وصلت إلى الحد الأقصى في النسخة المجانية (' + FREE_NAMES + ' اسماً في الشعبة). رقّ للنسخة السنوية لإضافة المزيد.';
+
+
+/* إغلاق النوافذ البسيطة بالضغط خارجها (النوافذ المهمة لا تُغلق) */
+const DISMISS_MODALS = new Set(['notesModal','colorsModal','studentColorModal','rowMenuModal','statsModal']);
+document.addEventListener('mousedown', (e) => {
+  const m = e.target;
+  if(!m || !m.classList || !m.classList.contains('modal') || m.hidden) return;
+  if(DISMISS_MODALS.has(m.id) || (m.id === 'confirmModal' && m.dataset.dismiss === '1')) closeModal(m.id);
+});
 
 /* ===== لوحة الأرقام (تظهر تحت الخانة) ===== */
 const keypad = $('numKeypad');
