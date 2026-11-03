@@ -1037,6 +1037,39 @@ html.vt-run *{transition:none!important}
 .sel-inline button{background:transparent; border:1px solid rgba(255,255,255,.55); color:#fff; padding:6px 13px; border-radius:999px; font:inherit; font-weight:700; font-size:13px; cursor:pointer; transition:transform .25s cubic-bezier(.2,.8,.2,1), background-color .2s}
 .sel-inline button:active{transform:scale(.93)}
 @media (hover:hover){.sel-inline button:hover{background:rgba(255,255,255,.18)}}
+
+/* ترحيب: منع التمرير + أزرار التنقل + حركات */
+body.onb-lock{overflow:hidden}
+.onb{touch-action:none; overscroll-behavior:none; overflow:hidden; z-index:900}
+.onb input{touch-action:manipulation}
+.onb-nav{display:flex; gap:10px; width:100%; max-width:420px}
+.onb-prev{flex:0 0 36%; height:52px; border:1px solid var(--line); border-radius:16px; background:var(--card); color:var(--ink); font:inherit; font-size:16px; font-weight:800; cursor:pointer}
+.onb-next{flex:1; width:auto; max-width:none}
+.onb-next.dis{opacity:.4; cursor:not-allowed}
+.onb-ico{position:relative}
+.onb-ico .ring{position:absolute; inset:-6px; border-radius:32px; border:2px solid var(--accent); opacity:0; pointer-events:none}
+.onb-ico.a-pop svg{animation:okPop 1.8s ease-in-out infinite}
+.onb-ico.a-tap svg{animation:okTap 1.6s ease-in-out infinite}
+.onb-ico.a-hold .ring{animation:okHold 1.8s ease-out infinite}
+.onb-ico.a-hold svg{animation:okTap 1.8s ease-in-out infinite}
+.onb-ico.a-check svg polyline{stroke-dasharray:20; stroke-dashoffset:20; animation:okDraw2 1.6s ease-in-out infinite}
+.onb-ico.a-wave svg{animation:okWave 2.4s ease-in-out infinite}
+.onb-ico.a-undo svg{animation:okSlide 1.6s ease-in-out infinite}
+.onb-ico.a-lock svg{animation:okPop 2.2s ease-in-out infinite}
+@keyframes okPop{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+@keyframes okTap{0%,100%{transform:scale(1)}40%{transform:scale(.86)}}
+@keyframes okHold{0%{opacity:.9; transform:scale(.8)}100%{opacity:0; transform:scale(1.5)}}
+@keyframes okDraw2{0%,15%{stroke-dashoffset:20}55%,100%{stroke-dashoffset:0}}
+@keyframes okWave{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+@keyframes okSlide{0%,100%{transform:translateX(0)}50%{transform:translateX(-7px)}}
+.sw-row{display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; padding:12px 4px; border:none; background:transparent; color:var(--ink); font:inherit; font-size:16px; font-weight:800; cursor:pointer; text-align:right}
+.onb .sw-row{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin-top:16px}
+.sw{position:relative; width:50px; height:30px; border-radius:99px; background:var(--line2); transition:background-color .3s cubic-bezier(.2,.8,.2,1); flex:none}
+.sw b{position:absolute; top:3px; right:3px; width:24px; height:24px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.3); transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.sw-row.on .sw{background:var(--accent)}
+.sw-row.on .sw b{transform:translateX(-20px)}
+.sw-row.locked{cursor:default; opacity:.85}
+.modal{z-index:950}
 </style>
 </head>
 <body>
@@ -1113,7 +1146,7 @@ html.vt-run *{transition:none!important}
       <h3>الملف الشخصي</h3>
       <label for="teacherName">اسم المعلم (اختياري)</label>
       <input class="form-field" id="teacherName" maxlength="40" placeholder="" autocomplete="off" oninput="saveTeacherName(this.value)">
-      <p class="set-note">يُحفظ الاسم في جهازك فقط، وإذا تركته فارغاً تظهر التحية بدون اسم.</p>
+      
       <label style="margin-top:14px">المرحلة الدراسية</label>
       <div class="chip-row" id="stageChips">
         <button type="button" class="chip" data-stage="class" onclick="setStage('class')">ابتدائي / متوسط (فصل)</button>
@@ -1121,6 +1154,19 @@ html.vt-run *{transition:none!important}
       </div>
     </div>
     <div class="set-card" id="subCard"></div>
+    <div class="set-card">
+      <h3>الميزات</h3>
+      <button type="button" class="sw-row on" id="swSchedule" onclick="toggleScheduleFeature()"><span>جدول الحصص</span><i class="sw"><b></b></i></button>
+      <div class="sw-row on locked"><span>التقويم</span><span class="sub-badge on">مفعّل</span></div>
+    </div>
+    <div class="set-card">
+      <h3>ثبّت التطبيق على جهازك</h3>
+      <div class="install-row">
+        <button class="install-btn" onclick="installApp('desktop')">الكمبيوتر</button>
+        <button class="install-btn" onclick="installApp('android')">أندرويد</button>
+        <button class="install-btn" onclick="installApp('ios')">الآيفون</button>
+      </div>
+    </div>
     <div class="set-card">
       <h3>البيانات</h3>
       <div class="set-actions" style="flex-direction:column">
@@ -1137,7 +1183,10 @@ html.vt-run *{transition:none!important}
   <button class="onb-skip" id="onbSkip" onclick="finishOnboarding(true)">تخطي</button>
   <div class="onb-body" id="onbBody"></div>
   <div class="onb-dots" id="onbDots"></div>
-  <button class="onb-next" id="onbNext" onclick="nextOnboarding()">التالي</button>
+  <div class="onb-nav">
+    <button class="onb-prev" id="onbPrev" onclick="prevOnboarding()">السابق</button>
+    <button class="onb-next" id="onbNext" onclick="nextOnboarding()">التالي</button>
+  </div>
 </div>
 
 <div class="modal" id="installModal" hidden>
@@ -1185,6 +1234,18 @@ html.vt-run *{transition:none!important}
     <h3 style="margin-top:12px">تم التفعيل</h3>
     <p style="color:var(--ink2); font-size:15px; line-height:1.9" id="actText"></p>
     <div class="modal-actions"><button class="btn primary" onclick="closeModal('activatedModal')">ابدأ</button></div>
+  </div>
+</div>
+
+<div class="modal" id="adviceModal" hidden>
+  <div class="modal-content">
+    <h3>نصيحة قبل المتابعة</h3>
+    <p style="font-size:15px; line-height:1.9; color:var(--ink2); margin:0 0 12px">ننصحك بإنشاء نسخة احتياطية الآن، لتستعيد بياناتك لاحقاً من الإعدادات إن احتجت إليها.</p>
+    <div class="modal-actions">
+      <button class="btn" onclick="createBackup()">إنشاء نسخة</button>
+      <button class="btn danger" onclick="closeModal('adviceModal'); confirmStageChange()">متابعة</button>
+      <button class="btn" onclick="closeModal('adviceModal'); pendingStage = null">إلغاء</button>
+    </div>
   </div>
 </div>
 
@@ -1562,6 +1623,16 @@ function closeModal(id){
   setTimeout(() => { el.classList.remove('closing'); el.hidden = true; }, 200);
 }
 function openModal(id){ const el = $(id); if(el) el.hidden = false; }
+const OUTSIDE_CLOSE = ['notesModal','colorsModal','studentColorModal','rowMenuModal','statsModal'];
+(function(){
+  let down = null;
+  document.addEventListener('mousedown', e => { down = e.target; });
+  document.addEventListener('touchstart', e => { down = e.target; }, {passive:true});
+  document.addEventListener('click', e => {
+    const t = e.target;
+    if(t && t.classList && t.classList.contains('modal') && down === t && OUTSIDE_CLOSE.indexOf(t.id) >= 0) closeModal(t.id);
+  });
+})();
 
 /* ===== القائمة ☰ ===== */
 function toggleMenu(e){
@@ -3035,6 +3106,16 @@ function renderGreeting(){
   if(hj){ const sp = document.createElement('span'); sp.textContent = '  ·  ' + hj; dt.appendChild(sp); }
 }
 
+
+/* ===== ميزات قابلة للتفعيل ===== */
+function scheduleOn(){ return loadProfile().schedule !== false; }
+function applyFeatureFlags(){
+  const t = $('tabSchedule'); if(t) t.style.display = scheduleOn() ? '' : 'none';
+  if(!scheduleOn() && currentView === 'schedule') showView('records');
+  const sw = $('swSchedule'); if(sw) sw.classList.toggle('on', scheduleOn());
+}
+function toggleScheduleFeature(){ saveProfile({schedule: !scheduleOn()}); applyFeatureFlags(); }
+
 /* ===== التنقل بين الصفحات ===== */
 let currentView = 'records';
 function showView(v){
@@ -3131,69 +3212,112 @@ function initStageLabels(){
 function markStageChips(){
   document.querySelectorAll('#stageChips .chip').forEach(c => c.classList.toggle('sel', c.dataset.stage === getStage()));
 }
+let pendingStage = null;
 function setStage(v){
   if(v === getStage()) return;
+  pendingStage = v;
+  showConfirm('تغيير المرحلة الدراسية', 'سيؤدي تغيير المرحلة إلى مسح بياناتك الحالية (الشعب والطلاب والدرجات وجدول الحصص).<br>اشتراكك يبقى مفعّلاً ولا يتأثر.', () => { openModal('adviceModal'); });
+}
+function confirmStageChange(){
+  const v = pendingStage; if(!v) return;
+  try{ localStorage.removeItem('gradesheet_schedule'); }catch(e){}
+  state = {
+    columns: DEFAULT_COLUMNS.map(c => ({...c})),
+    sections: DEFAULT_SECTIONS.map(x => makeSection(x)),
+    lastBackup: null, day: todayKey()
+  };
   saveProfile({stage:v});
-  try{ save(); }catch(e){}
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
   location.reload();
 }
 
 /* ===== شاشة الترحيب ===== */
 const ONB_VERSION = 1;
 const ONB_SLIDES = [
-  {since:1, icon:'<path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/>', title:'أهلاً بك في سجل الطلاب', text:'سجّل الدرجات والحضور لكل شعبة بسرعة وبساطة، ويعمل التطبيق حتى بدون إنترنت.'},
-  {since:1, icon:'<rect x="3" y="4" width="18" height="17" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/>', title:'جدول الحصص', text:'رتّب حصصك الأسبوعية في مكان واحد، مع التحية والتاريخ الهجري والميلادي كل يوم.'},
-  {since:1, icon:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>', title:'بياناتك في جهازك', text:'كل شيء محفوظ في جهازك فقط. أنشئ نسخة احتياطية من القائمة ☰ بين فترة وأخرى.'},
-  {since:1, setup:true, icon:'<path d="M12 3l9 5-9 5-9-5z"/><path d="M7 11v5c0 1.5 2.2 3 5 3s5-1.5 5-3v-5"/>', title:'ما مرحلتك الدراسية؟', text:''}
+  {since:1, anim:'a-pop', icon:'<path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/>', title:'أهلاً بك في سجل الطلاب', text:'سجّل الدرجات والحضور لكل فصل أو شعبة بسرعة وبساطة، ويعمل التطبيق حتى بدون إنترنت.'},
+  {since:1, anim:'a-tap', icon:'<rect x="3" y="5" width="18" height="14" rx="3"/><line x1="9" y1="5" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/><line x1="3" y1="12" x2="21" y2="12"/>', title:'تسجيل الدرجات', text:'اضغط على خانة الدرجة وأدخل الرقم من لوحة الأرقام، ويُحسب المجموع تلقائياً.'},
+  {since:1, anim:'a-hold', icon:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/>', title:'الضغط المطوّل', text:'اضغط مطوّلاً على اسم الطالب أو على الفصل أو الشعبة لتظهر لك قائمة الخيارات.'},
+  {since:1, anim:'a-check', icon:'<circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16.5 9"/>', title:'الحضور والغياب', text:'سجّل حاضر أو غائب أو متأخر بضغطة واحدة لكل طالب.'},
+  {since:1, anim:'a-wave', icon:'<path d="M12 3a9 9 0 1 0 0 18 2 2 0 0 0 2-2c0-1.2-1-1.6-1-2.6a2 2 0 0 1 2-2h2a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="11" r="1"/>', title:'ملاحظات وألوان', text:'أضف ملاحظة لأي طالب وميّزه بلون خاص من قائمة الضغط المطوّل.'},
+  {since:1, anim:'a-undo', icon:'<line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/>', title:'رجوع وللأمام', text:'إن حذفت أو عدّلت شيئاً بالخطأ ففي شريط الشعب سهما رجوع وللأمام.'},
+  {since:1, anim:'a-lock', icon:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>', title:'بياناتك في جهازك', text:'كل شيء محفوظ في جهازك فقط. أنشئ نسخة احتياطية من الإعدادات بين فترة وأخرى.'},
+  {since:1, install:true, anim:'a-pop', icon:'<path d="M12 3v12"/><polyline points="7 8 12 3 17 8"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>', title:'ثبّت التطبيق على جهازك', text:'ليعمل كتطبيق مستقل بدون متصفح.'},
+  {since:1, setup:'sched', anim:'a-pop', icon:'<rect x="3" y="4" width="18" height="17" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/>', title:'جدول الحصص', text:'ميزة تنظّم حصصك الأسبوعية. مفعّلة افتراضياً، وتجدها في الإعدادات ويمكنك إيقافها منها.'},
+  {since:1, setup:'stage', anim:'a-pop', icon:'<path d="M12 3l9 5-9 5-9-5z"/><path d="M7 11v5c0 1.5 2.2 3 5 3s5-1.5 5-3v-5"/>', title:'اختر مرحلتك الدراسية', text:''}
 ];
-let onbList = [], onbIdx = 0, onbStage = null;
+let onbList = [], onbIdx = 0, onbStage = null, onbSched = true;
 function onbSeen(){ try{ return parseInt(localStorage.getItem('gradesheet_onboard') || '0', 10) || 0; }catch(e){ return 0; } }
 function maybeOnboard(){
   const seen = onbSeen();
   onbList = ONB_SLIDES.filter(x => x.since > seen);
   if(seen > 0) onbList = onbList.filter(x => !x.setup);
   if(!onbList.length) return;
-  onbIdx = 0; $('onb').hidden = false; renderOnboarding();
+  onbIdx = 0; $('onb').hidden = false; document.body.classList.add('onb-lock'); renderOnboarding();
 }
+function onbCanNext(){ const sl = onbList[onbIdx]; return !(sl.setup === 'stage' && !onbStage); }
 function renderOnboarding(){
   const sl = onbList[onbIdx], body = $('onbBody');
   body.textContent = '';
   const w = document.createElement('div'); w.className = 'onb-slide';
-  w.innerHTML = '<div class="onb-ico"><svg viewBox="0 0 24 24">' + sl.icon + '</svg></div><h2></h2><p></p>';
+  w.innerHTML = '<div class="onb-ico ' + (sl.anim || '') + '"><svg viewBox="0 0 24 24">' + sl.icon + '</svg><i class="ring"></i></div><h2></h2><p></p>';
   w.querySelector('h2').textContent = sl.title; w.querySelector('p').textContent = sl.text;
-  if(sl.setup){
+  if(!sl.text) w.querySelector('p').remove();
+  if(sl.install){
+    const r = document.createElement('div'); r.className = 'install-row'; r.style.marginTop = '18px';
+    r.innerHTML = $('installCard').querySelector('.install-row').innerHTML;
+    w.appendChild(r);
+  }
+  if(sl.setup === 'sched'){
+    const t = document.createElement('button'); t.type = 'button'; t.className = 'sw-row' + (onbSched ? ' on' : '');
+    t.innerHTML = '<span>تفعيل جدول الحصص</span><i class="sw"><b></b></i>';
+    t.onclick = () => { onbSched = !onbSched; t.classList.toggle('on', onbSched); };
+    w.appendChild(t);
+  }
+  if(sl.setup === 'stage'){
     const o = document.createElement('div'); o.className = 'stage-opts';
-    [['class','ابتدائي / متوسط','تُسمّى «فصل» — مثل 101 و 102'], ['sec','ثانوي','تُسمّى «شعبة»']].forEach(([k,t,d]) => {
+    [['class','الابتدائي / التعليم المتوسط','«فصل»'], ['sec','الثانوي','«شعبة»']].forEach(([k,t,d]) => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'stage-opt' + (onbStage === k ? ' sel' : '');
       b.innerHTML = '<b></b><span></span>'; b.firstChild.textContent = t; b.lastChild.textContent = d;
-      b.onclick = () => { onbStage = k; o.querySelectorAll('.stage-opt').forEach(x => x.classList.toggle('sel', x === b)); };
+      b.onclick = () => { onbStage = k; o.querySelectorAll('.stage-opt').forEach(x => x.classList.toggle('sel', x === b)); updateOnbButtons(); };
       o.appendChild(b);
     });
     w.appendChild(o);
-    const n = document.createElement('input'); n.className = 'form-field'; n.id = 'onbName'; n.maxLength = 40; n.placeholder = 'اسمك (اختياري)'; n.autocomplete = 'off';
+    const n = document.createElement('input'); n.className = 'form-field'; n.id = 'onbName'; n.maxLength = 40; n.placeholder = 'اسم المعلم (اختياري)'; n.autocomplete = 'off';
     w.appendChild(n);
   }
   body.appendChild(w);
   const dots = $('onbDots'); dots.textContent = '';
   onbList.forEach((_, i) => { const d = document.createElement('i'); if(i === onbIdx) d.className = 'on'; dots.appendChild(d); });
+  updateOnbButtons();
+}
+function updateOnbButtons(){
   const last = onbIdx === onbList.length - 1;
-  $('onbNext').textContent = last ? 'ابدأ' : 'التالي';
+  const nx = $('onbNext');
+  nx.textContent = last ? 'ابدأ' : 'التالي';
+  const ok = onbCanNext();
+  nx.disabled = !ok; nx.classList.toggle('dis', !ok);
+  $('onbPrev').style.visibility = onbIdx > 0 ? 'visible' : 'hidden';
   $('onbSkip').style.visibility = last ? 'hidden' : 'visible';
 }
+function prevOnboarding(){ if(onbIdx > 0){ onbIdx--; renderOnboarding(); } }
 function nextOnboarding(){
+  if(!onbCanNext()) return;
   if(onbIdx < onbList.length - 1){ onbIdx++; renderOnboarding(); return; }
   finishOnboarding(false);
 }
 function finishOnboarding(skipped){
   const nm = $('onbName');
   if(!skipped){
-    if(nm && nm.value.trim()) saveProfile({name: nm.value.trim()});
-    if(onbStage && onbStage !== getStage()) saveProfile({stage: onbStage});
+    const patch = {schedule: onbSched};
+    if(nm && nm.value.trim()) patch.name = nm.value.trim();
+    if(onbStage && onbStage !== getStage()) patch.stage = onbStage;
+    saveProfile(patch);
   }
   try{ localStorage.setItem('gradesheet_onboard', String(ONB_VERSION)); }catch(e){}
+  document.body.classList.remove('onb-lock');
   if(!skipped && onbStage && onbStage !== loadStageBefore){ location.reload(); return; }
   const el = $('onb'); el.classList.add('closing');
-  setTimeout(() => { el.hidden = true; el.classList.remove('closing'); renderGreeting(); }, 300);
+  setTimeout(() => { el.hidden = true; el.classList.remove('closing'); renderGreeting(); applyFeatureFlags(); }, 300);
 }
 let loadStageBefore = null;
 
@@ -3752,6 +3876,7 @@ setTimeout(() => document.body.classList.remove('intro'), 2200);
 const APP_VERSION = '0.9.0';
 (function(){ const v = document.getElementById('viewSettings'); if(v){ const p = document.createElement('p'); p.className = 'set-note'; p.style.textAlign = 'center'; p.textContent = 'الإصدار ' + APP_VERSION; v.appendChild(p); } })();
 initLicense();
+applyFeatureFlags();
 initStageLabels();
 loadStageBefore = getStage();
 initInstallCard();
