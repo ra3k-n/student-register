@@ -1087,15 +1087,80 @@ body.onb-lock{overflow:hidden}
 .sw-row.on .sw b{transform:translateX(-20px)}
 .sw-row.locked{cursor:default; opacity:.85}
 .modal{z-index:950}
+
+/* ===== subscribe btn + calendar + liquid glass ===== */
+.gb-sub{grid-column:1; justify-self:start; display:inline-flex; align-items:center; gap:5px; height:38px; padding:0 12px; border:none; border-radius:19px; cursor:pointer; font:inherit; font-size:12.5px; font-weight:800; color:#fff; background:var(--accent); box-shadow:0 4px 12px color-mix(in srgb, var(--accent) 40%, transparent), inset 0 1px 0 rgba(255,255,255,.35); white-space:nowrap; transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s}
+.gb-sub svg{width:16px; height:16px; fill:currentColor; stroke:currentColor; stroke-width:1.5; stroke-linejoin:round}
+.gb-sub:active{transform:scale(.9)}
+.gb-sub.on{background:color-mix(in srgb, var(--accent) 16%, transparent); color:var(--accent); box-shadow:none}
+.gb-sub.on svg{fill:none}
+@media (max-width:520px){.gb-sub{padding:0 9px; font-size:11.5px; gap:3px}.gb-sub svg{width:15px;height:15px}.gb-tab{padding:0 6px; font-size:12px}}
+@media (max-width:380px){.glass-bar{padding:5px 3px; gap:0}.gb-tab{padding:0 5px; font-size:11px}.gb-btn{width:27px}.gb-btn svg{width:18px;height:18px}}
+@media (max-width:340px){.glass-bar{left:4px;right:4px}.gb-tab{font-size:10.5px;padding:0 4px}}
+@media (max-width:370px){.gb-sub span{display:none}.gb-sub{width:34px; padding:0; justify-content:center}}
+.sar{width:.8em; height:.9em; vertical-align:-.1em; fill:currentColor}
+.cal-card{background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:10px}
+.cal-nav{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px}
+.cal-month{font-weight:900; font-size:16px; text-align:center}
+.cal-month small{display:block; font-size:11px; color:var(--ink2); font-weight:700}
+.cal-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center}
+.cal-dow{font-size:11px; font-weight:800; color:var(--ink2); padding:4px 0}
+.cal-day{position:relative; min-height:46px; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:14px; font-weight:800; cursor:pointer}
+.cal-day small{font-size:9.5px; color:var(--ink2); font-weight:600}
+.cal-day.today{background:var(--accent); color:#fff}.cal-day.today small{color:#ffffffcc}
+.cal-day.off{opacity:.35}
+.cal-day i{position:absolute; bottom:3px; display:flex; gap:2px}
+.cal-day i b{width:5px; height:5px; border-radius:50%; background:var(--red)}
+.cal-day i b.u{background:var(--accent)}.cal-day i b.t{background:#e8a317}
+.cal-day.today i b{background:#fff}
+.cal-h{margin:18px 8px 8px; font-size:15px; font-weight:900}
+.cal-list{display:flex; flex-direction:column; gap:8px}
+.cal-item{display:flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 12px}
+.cal-item .dot{width:10px; height:10px; border-radius:50%; background:var(--red); flex:none}
+.cal-item .dot.u{background:var(--accent)}.cal-item .dot.t{background:#e8a317}
+.cal-item .nm{flex:1; font-weight:800; font-size:14px}.cal-item .nm small{display:block; color:var(--ink2); font-weight:600; font-size:11.5px}
+.cal-item .cd{font-size:12px; font-weight:800; color:var(--accent); white-space:nowrap}
+.cal-item .del{border:none; background:transparent; color:var(--ink2); cursor:pointer; font-size:18px; padding:0 4px}
+.cal-src{font-size:11.5px; color:var(--ink2); margin:12px 8px 24px; line-height:1.7}
+.ev-box{max-width:420px}
+.ev-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; direction:rtl}
+.ev-top h3{margin:0; font-size:17px}
+.ev-x,.ev-ok{width:38px; height:38px; border-radius:50%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center}
+.ev-x{background:color-mix(in srgb, var(--ink) 10%, transparent); color:var(--ink)}
+.ev-ok{background:#22a35a; color:#fff; box-shadow:0 4px 12px rgba(34,163,90,.4)}
+.ev-x svg,.ev-ok svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round}
+.ev-name{width:100%; font:inherit; font-size:16px; font-weight:700; padding:12px; border-radius:12px; border:1px solid var(--line); background:var(--bg); color:var(--ink); margin-bottom:6px}
+.ev-line{margin:10px 0}.ev-line label{font-size:12.5px; font-weight:800; color:var(--ink2)}
+.ev-in{display:flex; gap:8px; margin-top:4px}
+.ev-in input{flex:1; min-width:0; font:inherit; padding:9px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--ink)}
+.ev-in input[hidden]{display:none}
+.ev-dt{font-size:12px; color:var(--accent); font-weight:700; margin-top:4px}
+.ev-err{color:var(--red); font-size:13px; font-weight:700; margin-top:8px}
+/* Liquid Glass motion: menus & buttons only */
+.gb-tabs{--ix:0; --iw:0px}
+.gb-ind{position:absolute; top:0; bottom:0; border-radius:20px; background:var(--accent); box-shadow:0 4px 12px color-mix(in srgb, var(--accent) 45%, transparent); transition:inset-inline-start .5s cubic-bezier(.34,1.4,.64,1), width .5s cubic-bezier(.34,1.4,.64,1); z-index:0; pointer-events:none}
+.gb-tab{position:relative; z-index:1}
+.gb-tab.active{background:transparent!important; box-shadow:none!important}
+.btn,.gb-btn,.gb-sub,.gb-tab,.menu-dropdown button{transition-timing-function:cubic-bezier(.34,1.56,.64,1)}
+.btn,.gb-sub{position:relative; overflow:hidden}
+.btn::after,.gb-sub::after{content:""; position:absolute; inset:0; background:radial-gradient(circle at var(--px,50%) var(--py,50%), rgba(255,255,255,.45), transparent 60%); opacity:0; transition:opacity .35s; pointer-events:none}
+.btn:active::after,.gb-sub:active::after{opacity:1; transition:none}
+.menu-dropdown{-webkit-backdrop-filter:blur(24px) saturate(1.8); backdrop-filter:blur(24px) saturate(1.8)}
+.modal-content{-webkit-backdrop-filter:blur(18px) saturate(1.5); backdrop-filter:blur(18px) saturate(1.5)}
+.view{animation:fade .35s ease both}
+@media (prefers-reduced-motion:reduce){.gb-ind{transition:none}.btn::after,.gb-sub::after{display:none}}
 </style>
 </head>
 <body>
 
 <div class="bar-backdrop" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="sar" viewBox="0 0 1124.14 1256.39"><path fill="currentColor" d="M699.62,1113.02h0c-20.06,44.48-33.32,92.75-38.4,143.37l424.51-90.24c20.06-44.47,33.31-92.75,38.4-143.37l-424.51,90.24Z"/><path fill="currentColor" d="M1085.73,895.8c20.06-44.47,33.32-92.75,38.4-143.37l-330.68,70.33v-135.2l292.27-62.11c20.06-44.47,33.32-92.75,38.4-143.37l-330.68,70.27V66.13c-50.67,28.45-95.67,66.32-132.25,110.99v403.35l-132.25,28.11V0c-50.67,28.44-95.67,66.32-132.25,110.99v525.69l-295.91,62.88c-20.06,44.47-33.33,92.75-38.42,143.37l334.33-71.05v170.26l-358.3,76.14c-20.06,44.47-33.32,92.75-38.4,143.37l375.04-79.7c30.53-6.35,56.77-24.4,73.83-49.24l68.78-101.97v-.02c7.14-10.55,11.3-23.27,11.3-36.97v-149.98l132.25-28.11v270.4l424.53-90.28Z"/></symbol></defs></svg>
 <header class="glass-bar" id="glassBar">
+  <button class="gb-sub" id="subBtn" onclick="subBtnClick()" aria-label="الاشتراك"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg><span id="subBtnTxt">اشتراك</span></button>
   <nav class="gb-tabs">
     <button class="gb-tab active" id="tabRecords" onclick="showView('records')">سجل الطلاب</button>
     <button class="gb-tab" id="tabSchedule" onclick="showView('schedule')">جدول الحصص</button>
+    <button class="gb-tab" id="tabCalendar" onclick="showView('calendar')">التقويم</button>
   </nav>
   <div class="gb-tools">
     <button class="gb-btn" id="themeBtn" onclick="toggleTheme()" aria-label="تبديل المظهر">
@@ -1145,6 +1210,23 @@ body.onb-lock{overflow:hidden}
     <div id="sectionsContainer"></div>
   </div>
 
+  <div class="view" id="viewCalendar" hidden>
+    <div class="view-head">
+      <h2 class="view-title">التقويم</h2>
+      <button class="btn primary" id="calAddBtn" onclick="calAddClick()"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>إضافة</button>
+    </div>
+    <div class="cal-card">
+      <div class="cal-nav">
+        <button class="gb-btn" onclick="calMove(1)" aria-label="التالي"><svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg></button>
+        <div class="cal-month" id="calMonth"></div>
+        <button class="gb-btn" onclick="calMove(-1)" aria-label="السابق"><svg viewBox="0 0 24 24"><polyline points="15 6 9 12 15 18"/></svg></button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+    <h3 class="cal-h">القادم</h3>
+    <div class="cal-list" id="calList"></div>
+    <p class="cal-src">المواعيد الرسمية حسب تقويم وزارة التعليم، وقد تتغير؛ تأكد من إعلان الوزارة.</p>
+  </div>
   <div class="view" id="viewSchedule" hidden>
     <div class="view-head">
       <h2 class="view-title">جدول الحصص</h2>
@@ -1221,7 +1303,7 @@ body.onb-lock{overflow:hidden}
   <div class="modal-content">
     <h3>الاشتراك السنوي</h3>
     <p class="up-reason" id="upReason"></p>
-    <div class="up-price"><b>100</b> ر.س <span>للسنة الدراسية</span></div>
+    <div class="up-price"><b>100</b> <svg class="sar" viewBox="0 0 1124.14 1256.39" aria-label="ريال سعودي"><use href="#sar"/></svg> <span>للسنة الدراسية</span></div>
     <ul class="up-list"><li>شعب وأسماء بلا حدود</li><li>بياناتك الحالية تبقى كما هي</li><li>يُفعَّل بكود خاص بجهازك</li></ul>
     <div class="up-warn">رسوم الاشتراك غير مستردة، ويُنظر في أي طلب استرجاع بعد مرور فترة من الاشتراك.</div>
     <button class="btn primary up-big" style="width:100%; margin:12px 0" onclick="openSubNotice()">اشتراك</button>
@@ -1465,6 +1547,22 @@ body.onb-lock{overflow:hidden}
     <div class="modal-actions" style="margin-top:14px">
       <button class="btn" onclick="closeModal('backupModal')">إغلاق</button>
     </div>
+  </div>
+</div>
+
+<div class="modal" id="eventModal" hidden>
+  <div class="modal-content ev-box">
+    <div class="ev-top">
+      <button class="ev-x" onclick="closeModal('eventModal')" aria-label="إغلاق"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
+      <h3>حدث جديد</h3>
+      <button class="ev-ok" onclick="saveEvent()" aria-label="حفظ"><svg viewBox="0 0 24 24"><polyline points="5 12.5 10 17.5 19 7"/></svg></button>
+    </div>
+    <input class="ev-name" id="evName" placeholder="اسم الحدث" maxlength="60">
+    <button class="sw-row" id="evAllRow" onclick="evToggleAll()"><span>طوال اليوم</span><span class="sw"><b></b></span></button>
+    <div class="ev-line"><label>البداية</label><div class="ev-in"><input type="date" id="evSD" onchange="evRefresh()"><input type="time" id="evST" value="08:00" onchange="evRefresh()"></div><div class="ev-dt" id="evSDt"></div></div>
+    <div class="ev-line" id="evEndLine"><label>النهاية</label><div class="ev-in"><input type="date" id="evED" onchange="evRefresh()"><input type="time" id="evET" value="09:00" onchange="evRefresh()"></div><div class="ev-dt" id="evEDt"></div></div>
+    <div class="ev-dt" id="evAllNote" hidden style="margin-top:-6px">لليوم المحدد فقط</div>
+    <div class="ev-err" id="evErr" hidden></div>
   </div>
 </div>
 
@@ -2998,7 +3096,7 @@ async function createBackup(){
   const now = Date.now();
   try{
     const ext = {};
-    try{ ext.license = localStorage.getItem(LIC_KEY); ext.device = localStorage.getItem(DEV_KEY); ext.schedule = localStorage.getItem('gradesheet_schedule'); ext.profile = localStorage.getItem('gradesheet_profile'); }catch(e){}
+    try{ ext.license = localStorage.getItem(LIC_KEY); ext.device = localStorage.getItem(DEV_KEY); ext.schedule = localStorage.getItem('gradesheet_schedule'); ext.profile = localStorage.getItem('gradesheet_profile'); ext.events = localStorage.getItem(EV_KEY); }catch(e){}
     const text = JSON.stringify(Object.assign({}, state, { lastBackup: now, _ext: ext }));
     const d = new Date();
     const fname = 'grades-backup-' + d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0') + '.json';
@@ -3046,6 +3144,7 @@ $('restoreFileInput').addEventListener('change', async (e) => {
         if(ext.device) localStorage.setItem(DEV_KEY, ext.device);
         if(ext.license) localStorage.setItem(LIC_KEY, ext.license);
         if(ext.schedule) localStorage.setItem('gradesheet_schedule', ext.schedule);
+        if(ext.events) localStorage.setItem(EV_KEY, ext.events);
         if(ext.profile && !localStorage.getItem('gradesheet_profile')) localStorage.setItem('gradesheet_profile', ext.profile);
       }catch(e){}
       state = data;
@@ -3134,7 +3233,7 @@ function saveTeacherName(v){
 }
 function renderGreeting(){
   const h = new Date().getHours();
-  const hello = (h >= 5 && h < 12) ? 'صباح الخير' : 'مساء الخير';
+  const hello = (h < 12) ? 'صباح الخير' : 'مساء الخير';
   const name = (loadProfile().name || '').trim();
   const el = $('greetHello');
   el.textContent = hello;
@@ -3160,16 +3259,110 @@ function toggleScheduleFeature(){ saveProfile({schedule: !scheduleOn()}); applyF
 
 /* ===== التنقل بين الصفحات ===== */
 let currentView = 'records';
+
+/* ===== Calendar ===== */
+const EV_KEY='gradesheet_events';
+const OFFICIAL=[
+ {n:'الاختبارات القصيرة (الفترة الأولى)',d:'2026-10-11',k:'t'},
+ {n:'بداية إجازة منتصف الفصل الأول',d:'2026-11-19',k:'o'},
+ {n:'الاختبارات القصيرة (الفترة الثانية)',d:'2026-12-06',k:'t'},
+ {n:'بداية الاختبارات النهائية للفصل الأول',d:'2027-01-03',k:'t'},
+ {n:'يوم التأسيس',d:'2027-02-22',k:'o'}
+];
+let calY=new Date().getFullYear(), calM=new Date().getMonth();
+function loadEvents(){ try{ const a=JSON.parse(localStorage.getItem(EV_KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+function saveEvents(a){ try{ localStorage.setItem(EV_KEY, JSON.stringify(a)); }catch(e){} }
+function dstr(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function allEvents(){
+  const out=OFFICIAL.map(o=>({n:o.n,s:o.d,e:o.d,k:o.k,off:true}));
+  loadEvents().forEach(e=>out.push({id:e.id,n:e.name,s:e.s,e:e.e||e.s,st:e.allDay?'':e.st,et:e.allDay?'':e.et,k:'u'}));
+  return out.sort((a,b)=>a.s<b.s?-1:a.s>b.s?1:0);
+}
+function fmtLong(ds){ if(!ds) return ''; const d=new Date(ds+'T00:00:00'); let g='',h=''; try{ g=d.toLocaleDateString('ar-SA-u-ca-gregory',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); h=d.toLocaleDateString('ar-SA-u-ca-islamic-umalqura',{day:'numeric',month:'long',year:'numeric'}); }catch(e){ g=ds; } return g+(h?' — '+h:''); }
+function calMove(n){ calM+=n; if(calM>11){calM=0;calY++} if(calM<0){calM=11;calY--} renderCalendar(); }
+function renderCalendar(){
+  const ev=allEvents(), today=dstr(new Date());
+  const first=new Date(calY,calM,1), days=new Date(calY,calM+1,0).getDate();
+  let mt='',hj='';
+  try{ mt=first.toLocaleDateString('ar-SA-u-ca-gregory',{month:'long',year:'numeric'}); hj=first.toLocaleDateString('ar-SA-u-ca-islamic-umalqura',{month:'long',year:'numeric'}); }catch(e){}
+  $('calMonth').innerHTML=mt+'<small>'+hj+'</small>';
+  const dow=['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+  let h=dow.map(x=>'<div class="cal-dow">'+x+'</div>').join('');
+  for(let i=0;i<first.getDay();i++) h+='<div></div>';
+  for(let d=1; d<=days; d++){
+    const ds=calY+'-'+String(calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const dt=new Date(calY,calM,d); let hd=''; try{ hd=dt.toLocaleDateString('ar-SA-u-ca-islamic-umalqura',{day:'numeric'}); }catch(e){}
+    const es=ev.filter(e=>e.s<=ds&&ds<=e.e);
+    const dots=es.slice(0,3).map(e=>'<b class="'+e.k+'"></b>').join('');
+    h+='<div class="cal-day'+(ds===today?' today':'')+'" data-d="'+ds+'">'+d+'<small>'+hd+'</small>'+(dots?'<i>'+dots+'</i>':'')+'</div>';
+  }
+  $('calGrid').innerHTML=h;
+  const up=ev.filter(e=>e.e>=today).slice(0,12);
+  $('calList').innerHTML=up.length?up.map(e=>{
+    const diff=Math.round((new Date(e.s+'T00:00:00')-new Date(today+'T00:00:00'))/864e5);
+    const cd=diff<=0?'اليوم':diff===1?'غداً':'بعد '+diff+' يوماً';
+    const sub=fmtLong(e.s)+(e.e!==e.s?' ← '+fmtLong(e.e):'')+(e.st?' · '+e.st+(e.et?'–'+e.et:''):'');
+    return '<div class="cal-item"><span class="dot '+e.k+'"></span><div class="nm">'+escHtml(e.n)+'<small>'+escHtml(sub)+'</small></div><span class="cd">'+cd+'</span>'+(e.id?'<button class="del" onclick="delEvent(\''+e.id+'\')" aria-label="حذف">×</button>':'')+'</div>';
+  }).join(''):'<div class="cal-item"><div class="nm">لا توجد أحداث قادمة</div></div>';
+}
+function escHtml(t){ return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function delEvent(id){ saveEvents(loadEvents().filter(e=>e.id!==id)); renderCalendar(); }
+function calAddClick(){
+  if(!isPaid()){ openUpgrade('إضافة الأحداث للمشتركين فقط'); return; }
+  $('evName').value=''; $('evErr').hidden=true;
+  const t=dstr(new Date()); $('evSD').value=t; $('evED').value=t; $('evST').value='08:00'; $('evET').value='09:00';
+  $('evAllRow').classList.remove('on'); evRefresh(); openModal('eventModal');
+}
+function evAll(){ return $('evAllRow').classList.contains('on'); }
+function evToggleAll(){ $('evAllRow').classList.toggle('on'); evRefresh(); }
+function evRefresh(){
+  const all=evAll();
+  $('evST').hidden=all; $('evET').hidden=all; $('evEndLine').hidden=all; $('evAllNote').hidden=!all;
+  $('evSDt').textContent=fmtLong($('evSD').value);
+  $('evEDt').textContent=fmtLong($('evED').value);
+  
+}
+function saveEvent(){
+  const name=$('evName').value.trim(), all=evAll(), sd=$('evSD').value, ed=all?sd:($('evED').value||sd);
+  const st=$('evST').value, et=$('evET').value, err=$('evErr');
+  if(!name){ err.textContent='اكتب اسم الحدث'; err.hidden=false; return; }
+  if(!sd){ err.textContent='اختر التاريخ'; err.hidden=false; return; }
+  if(!all && (ed<sd || (ed===sd && et<=st))){ err.textContent='وقت النهاية يجب أن يكون بعد البداية'; err.hidden=false; return; }
+  const a=loadEvents(); a.push({id:'e'+Date.now().toString(36),name:name,allDay:all,s:sd,e:ed,st:st,et:et}); saveEvents(a);
+  closeModal('eventModal'); calY=+sd.slice(0,4); calM=+sd.slice(5,7)-1; renderCalendar();
+}
+/* ===== subscribe button + tab indicator ===== */
+function updateSubBtn(){
+  const b=$('subBtn'); if(!b) return;
+  const on=lic.status==='active', exp=lic.status==='expired';
+  b.classList.toggle('on',on); $('subBtnTxt').textContent=on?'مشترك':exp?'تجديد':'اشتراك';
+}
+function subBtnClick(){ if(isPaid()) showView('settings'); else openUpgrade(''); }
+function moveInd(){
+  const nav=document.querySelector('.gb-tabs'); if(!nav) return;
+  let ind=nav.querySelector('.gb-ind'); if(!ind){ ind=document.createElement('span'); ind.className='gb-ind'; nav.prepend(ind); }
+  const a=nav.querySelector('.gb-tab.active');
+  if(!a||a.offsetWidth===0){ ind.style.opacity=0; return; }
+  ind.style.opacity=1; ind.style.width=a.offsetWidth+'px';
+  ind.style.insetInlineStart=(nav.offsetWidth-a.offsetLeft-a.offsetWidth)+'px';
+}
+window.addEventListener('resize',moveInd);
+window.addEventListener('load',()=>{ moveInd(); setTimeout(moveInd,600); });
+document.addEventListener('pointerdown',e=>{ const b=e.target.closest&&e.target.closest('.btn,.gb-sub'); if(b){ const r=b.getBoundingClientRect(); b.style.setProperty('--px',(e.clientX-r.left)+'px'); b.style.setProperty('--py',(e.clientY-r.top)+'px'); } },{passive:true});
+
 function showView(v){
   currentView = v;
   closeMenu();
-  ['records','schedule','settings'].forEach(n => {
+  ['records','schedule','calendar','settings'].forEach(n => {
     const el = $('view' + n[0].toUpperCase() + n.slice(1));
     if(el) el.hidden = (n !== v);
   });
   $('greet').hidden = (v !== 'records');
   $('tabRecords').classList.toggle('active', v === 'records');
   $('tabSchedule').classList.toggle('active', v === 'schedule');
+  $('tabCalendar').classList.toggle('active', v === 'calendar');
+  if(v === 'calendar') renderCalendar();
+  setTimeout(moveInd, 0);
   $('settingsBtn').classList.toggle('active', v === 'settings');
   if(v === 'schedule') renderSchedule();
   if(v === 'settings'){ $('teacherName').value = loadProfile().name || ''; markStageChips(); }
@@ -3478,6 +3671,7 @@ function openRestoreSub(){
   const dt = $('upgradeModal').querySelector('details'); if(dt) dt.open = true;
 }
 function renderSubscription(){
+  updateSubBtn();
   const c = $('subCard'); if(!c) return;
   const free = lic.status === 'free', exp = lic.status === 'expired', on = lic.status === 'active';
   const badge = on ? '<span class="sub-badge on">مشترك</span>' : exp ? '<span class="sub-badge off">منتهي</span>' : '<span class="sub-badge gray">غير مشترك</span>';
@@ -3962,7 +4156,7 @@ document.addEventListener('visibilitychange', () => { if(document.hidden) save()
 
 document.body.classList.add('intro');
 setTimeout(() => document.body.classList.remove('intro'), 2200);
-const APP_VERSION = '0.9.0';
+const APP_VERSION = '0.10.0';
 (function(){ const v = document.getElementById('viewSettings'); if(v){ const p = document.createElement('p'); p.className = 'set-note'; p.style.textAlign = 'center'; p.textContent = 'الإصدار ' + APP_VERSION; v.appendChild(p); } })();
 initLicense();
 applyFeatureFlags();
