@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="سجل الطلاب">
 <meta name="theme-color" content="#1f5c55">
 <script>(function(){var t='light';try{t=localStorage.getItem('gradesheet_theme')||'light'}catch(e){}document.documentElement.setAttribute('data-theme',t)})()</script>
+<script>try{ if(!localStorage.getItem("gradesheet_onboard")) document.documentElement.classList.add("onb-pending"); }catch(e){}</script>
 <style>
 :root{
   --bg:#f5f5f2; --bg2:#ffffff; --card:#ffffff;
@@ -1153,6 +1154,59 @@ td.name-cell input:not([readonly]){-webkit-user-select:text; user-select:text}
 .modal-content{-webkit-backdrop-filter:blur(18px) saturate(1.5); backdrop-filter:blur(18px) saturate(1.5)}
 .view{animation:fade .35s ease both}
 @media (prefers-reduced-motion:reduce){.gb-ind{transition:none}.btn::after,.gb-sub::after{display:none}}
+
+/* only the glass bar is fixed */
+.sections-strip{position:relative!important; top:auto!important}
+/* ===== onboarding polish ===== */
+.onb-slide.in-r{animation:onbInR .6s cubic-bezier(.2,.8,.2,1) both}
+.onb-slide.in-l{animation:onbInL .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes onbInR{from{opacity:0; transform:translateX(-46px) scale(.97)}to{opacity:1; transform:none}}
+@keyframes onbInL{from{opacity:0; transform:translateX(46px) scale(.97)}to{opacity:1; transform:none}}
+.onb-dots i{cursor:pointer; position:relative; transition:width .5s cubic-bezier(.34,1.56,.64,1), background-color .4s, transform .3s}
+.onb-dots i::before{content:""; position:absolute; inset:-8px -3px}
+.onb-dots i.done{background:color-mix(in srgb, var(--accent) 45%, var(--line2))}
+.onb-dots i.on{width:28px; background:var(--accent); animation:dotPulse .6s ease}
+@keyframes dotPulse{0%{transform:scaleY(1)}40%{transform:scaleY(1.5)}100%{transform:scaleY(1)}}
+.onb-nav{justify-content:center; gap:0}
+.onb-next{flex:none; width:calc(100% - 62px); transition:width .8s cubic-bezier(.2,.8,.2,1), opacity .2s, transform .25s}
+.onb-nav.first .onb-next{width:62%}
+.onb-prev{flex:none; width:0; height:52px; padding:0; margin-inline-end:0; border:1px solid transparent; opacity:0; overflow:hidden; display:flex; align-items:center; justify-content:center; transform:translateX(-46px); pointer-events:none; transition:width .8s cubic-bezier(.2,.8,.2,1), margin .8s cubic-bezier(.2,.8,.2,1), opacity .6s ease, transform .9s cubic-bezier(.2,.8,.2,1), border-color .4s}
+.onb-prev.show{width:52px; margin-inline-end:10px; opacity:1; transform:none; pointer-events:auto; border-color:var(--line)}
+.onb-next{margin-inline:0}
+.onb-nav.first .onb-next{margin-inline:auto}
+.onb-prev svg{width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round}
+.onb-prev.show svg{animation:prevNudge 1.2s .5s cubic-bezier(.2,.8,.2,1) 1}
+@keyframes prevNudge{0%{transform:translateX(-14px)}100%{transform:none}}
+/* table icon */
+.onb-ico.a-table{animation:icoFloat 3.2s ease-in-out infinite}
+@keyframes icoFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+.a-table .tb-l{stroke-dasharray:20; stroke-dashoffset:20; animation:tbDraw 3.2s ease-in-out infinite}
+.a-table .tb-2{animation-delay:.18s}.a-table .tb-3{animation-delay:.36s}
+.a-table .tb-f{stroke-dasharray:70; stroke-dashoffset:70; animation:tbFrame 3.2s ease-in-out infinite}
+.a-table .tb-d{fill:#fff; stroke:none; opacity:0; transform-box:fill-box; transform-origin:center; animation:tbDot 3.2s ease-in-out infinite; animation-delay:.9s}
+.a-table .tb-d2{animation-delay:1.1s}.a-table .tb-d3{animation-delay:1.3s}
+@keyframes tbFrame{0%{stroke-dashoffset:70}30%,90%{stroke-dashoffset:0}100%{stroke-dashoffset:-70}}
+@keyframes tbDraw{0%,8%{stroke-dashoffset:20}35%,88%{stroke-dashoffset:0}100%{stroke-dashoffset:-20}}
+@keyframes tbDot{0%,20%{opacity:0; transform:scale(0)}40%{opacity:1; transform:scale(1.6)}55%,88%{opacity:1; transform:scale(1)}100%{opacity:0; transform:scale(0)}}
+.onb-ico.a-table svg{animation:none}
+/* attendance: check -> x -> clock */
+.a-att svg{animation:none}
+.a-att .at-ok,.a-att .at-x line,.a-att .at-clk line{stroke-dasharray:12; stroke-dashoffset:12; opacity:0}
+.a-att .at-ok{animation:atOk 3.3s ease-in-out infinite}
+.a-att .at-x{transform-box:fill-box; transform-origin:center; animation:atX 3.3s ease-in-out infinite}
+.a-att .at-x line{animation:atXl 3.3s ease-in-out infinite}
+.a-att .at-clk{transform-box:view-box; transform-origin:12px 12px}
+.a-att .at-clk line{animation:atClk 3.3s ease-in-out infinite}
+.a-att .at-h2{animation-name:atClk2!important}
+.a-att .at-c{animation:atC 3.3s ease-in-out infinite; transform-box:fill-box; transform-origin:center}
+@keyframes atOk{0%{stroke-dashoffset:12;opacity:1}12%,28%{stroke-dashoffset:0;opacity:1}33%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes atXl{0%,33%{stroke-dashoffset:12;opacity:0}34%{opacity:1}45%,61%{stroke-dashoffset:0;opacity:1}66%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes atX{0%,33%{transform:rotate(-90deg) scale(.5)}45%{transform:rotate(0) scale(1.1)}52%,100%{transform:rotate(0) scale(1)}}
+@keyframes atClk{0%,66%{stroke-dashoffset:12;opacity:0}67%{opacity:1}76%,94%{stroke-dashoffset:0;opacity:1}99%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes atClk2{0%,66%{stroke-dashoffset:12;opacity:0}67%{opacity:1}76%,94%{stroke-dashoffset:0;opacity:1}99%,100%{opacity:0;stroke-dashoffset:0}}
+@keyframes atC{0%,30%{transform:scale(1)}33%{transform:scale(1.12)}37%,63%{transform:scale(1)}66%{transform:scale(1.12)}70%,100%{transform:scale(1)}}
+.onb-pending main,.onb-pending .glass-bar,.onb-pending .greet{visibility:hidden}
+@media (prefers-reduced-motion:reduce){.onb-slide.in-r,.onb-slide.in-l{animation:none}}
 </style>
 </head>
 <body>
@@ -1229,7 +1283,7 @@ td.name-cell input:not([readonly]){-webkit-user-select:text; user-select:text}
     </div>
     <h3 class="cal-h">القادم</h3>
     <div class="cal-list" id="calList"></div>
-    <p class="cal-src">المواعيد الرسمية حسب تقويم وزارة التعليم، وقد تتغير؛ تأكد من إعلان الوزارة.</p>
+    <p class="cal-src">الإجازات حسب تقويم وزارة التعليم (تواريخ بداية كل إجازة). مواعيد الاختبارات من إعلانات منشورة وقد تتغير؛ تأكد من إعلان الوزارة.</p>
   </div>
   <div class="view" id="viewSchedule" hidden>
     <div class="view-head">
@@ -1286,11 +1340,11 @@ td.name-cell input:not([readonly]){-webkit-user-select:text; user-select:text}
 
 
 <div class="onb" id="onb" hidden>
-  <button class="onb-skip" id="onbSkip" onclick="finishOnboarding(true)">تخطي</button>
+  <button class="onb-skip" id="onbSkip" onclick="skipOnboarding()">تخطي</button>
   <div class="onb-body" id="onbBody"></div>
   <div class="onb-dots" id="onbDots"></div>
-  <div class="onb-nav">
-    <button class="onb-prev" id="onbPrev" onclick="prevOnboarding()">السابق</button>
+  <div class="onb-nav first" id="onbNav">
+    <button class="onb-prev" id="onbPrev" onclick="prevOnboarding()" aria-label="السابق"><svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/></svg></button>
     <button class="onb-next" id="onbNext" onclick="nextOnboarding()">التالي</button>
   </div>
 </div>
@@ -3267,11 +3321,17 @@ let currentView = 'records';
 /* ===== Calendar ===== */
 const EV_KEY='gradesheet_events';
 const OFFICIAL=[
+ {n:'عودة المعلمين',d:'2026-08-16',k:'o'},
+ {n:'بداية العام الدراسي 1448 - 1449 هـ',d:'2026-08-23',k:'o'},
+ {n:'إجازة اليوم الوطني',d:'2026-09-23',k:'o'},
  {n:'الاختبارات القصيرة (الفترة الأولى)',d:'2026-10-11',k:'t'},
- {n:'بداية إجازة منتصف الفصل الأول',d:'2026-11-19',k:'o'},
+ {n:'بداية إجازة الخريف',d:'2026-11-20',k:'o'},
  {n:'الاختبارات القصيرة (الفترة الثانية)',d:'2026-12-06',k:'t'},
  {n:'بداية الاختبارات النهائية للفصل الأول',d:'2027-01-03',k:'t'},
- {n:'يوم التأسيس',d:'2027-02-22',k:'o'}
+ {n:'بداية إجازة منتصف العام الدراسي',d:'2027-01-08',k:'o'},
+ {n:'إجازة يوم التأسيس',d:'2027-02-19',k:'o'},
+ {n:'بداية إجازة عيد الفطر',d:'2027-02-26',k:'o'},
+ {n:'بداية إجازة عيد الأضحى',d:'2027-05-07',k:'o'}
 ];
 let calY=new Date().getFullYear(), calM=new Date().getMonth();
 function loadEvents(){ try{ const a=JSON.parse(localStorage.getItem(EV_KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
@@ -3495,10 +3555,10 @@ function confirmStageChange(){
 /* ===== شاشة الترحيب ===== */
 const ONB_VERSION = 1;
 const ONB_SLIDES = [
-  {since:1, anim:'a-pop', icon:'<path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="14" y2="13"/>', title:'أهلاً بك في سجل الطلاب', text:'سجّل الدرجات والحضور لكل فصل أو شعبة بسرعة وبساطة، ويعمل التطبيق حتى بدون إنترنت.'},
+  {since:1, anim:'a-table', icon:'<rect class="tb-f" x="3" y="5" width="18" height="14" rx="3"/><line class="tb-l tb-1" x1="9" y1="5" x2="9" y2="19"/><line class="tb-l tb-2" x1="15" y1="5" x2="15" y2="19"/><line class="tb-l tb-3" x1="3" y1="12" x2="21" y2="12"/><circle class="tb-d" cx="6" cy="8.5" r="1"/><circle class="tb-d tb-d2" cx="12" cy="15.5" r="1"/><circle class="tb-d tb-d3" cx="18" cy="8.5" r="1"/>', title:'أهلاً بك في سجل الطلاب', text:'سجّل الدرجات والحضور لكل فصل أو شعبة بسرعة وبساطة، ويعمل التطبيق حتى بدون إنترنت.'},
   {since:1, anim:'a-tap', icon:'<rect x="3" y="5" width="18" height="14" rx="3"/><line x1="9" y1="5" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/><line x1="3" y1="12" x2="21" y2="12"/>', title:'تسجيل الدرجات', text:'اضغط على خانة الدرجة وأدخل الرقم من لوحة الأرقام، ويُحسب المجموع تلقائياً.'},
   {since:1, anim:'a-hold', icon:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/>', title:'الضغط المطوّل', text:'اضغط مطوّلاً على اسم الطالب أو على الفصل أو الشعبة لتظهر لك قائمة الخيارات.'},
-  {since:1, anim:'a-check', icon:'<circle cx="12" cy="12" r="9"/><polyline points="8 12.5 11 15.5 16.5 9"/>', title:'الحضور والغياب', text:'سجّل حاضر أو غائب أو متأخر بضغطة واحدة لكل طالب.'},
+  {since:1, anim:'a-att', icon:'<circle class="at-c" cx="12" cy="12" r="9"/><polyline class="at-ok" points="8 12.5 11 15.5 16.5 9"/><g class="at-x"><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/><line x1="15.5" y1="8.5" x2="8.5" y2="15.5"/></g><g class="at-clk"><line class="at-h1" x1="12" y1="12" x2="12" y2="7.5"/><line class="at-h2" x1="12" y1="12" x2="15.2" y2="13.8"/></g>', title:'الحضور والغياب', text:'سجّل حاضر أو غائب أو متأخر بضغطة واحدة لكل طالب.'},
   {since:1, anim:'a-wave', icon:'<path d="M12 3a9 9 0 1 0 0 18 2 2 0 0 0 2-2c0-1.2-1-1.6-1-2.6a2 2 0 0 1 2-2h2a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="11" r="1"/>', title:'ملاحظات وألوان', text:'أضف ملاحظة لأي طالب وميّزه بلون خاص من قائمة الضغط المطوّل.'},
   {since:1, anim:'a-undo', icon:'<line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/>', title:'رجوع وللأمام', text:'إن حذفت أو عدّلت شيئاً بالخطأ ففي شريط الشعب سهما رجوع وللأمام.'},
   {since:1, anim:'a-lock', icon:'<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>', title:'بياناتك في جهازك', text:'كل شيء محفوظ في جهازك فقط. أنشئ نسخة احتياطية من الإعدادات بين فترة وأخرى.'},
@@ -3506,20 +3566,22 @@ const ONB_SLIDES = [
   {since:1, setup:'sched', anim:'a-pop', icon:'<rect x="3" y="4" width="18" height="17" rx="3"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/>', title:'جدول الحصص', text:'ميزة تنظّم حصصك الأسبوعية. مفعّلة افتراضياً، وتجدها في الإعدادات ويمكنك إيقافها منها.'},
   {since:1, setup:'stage', anim:'a-pop', icon:'<path d="M12 3l9 5-9 5-9-5z"/><path d="M7 11v5c0 1.5 2.2 3 5 3s5-1.5 5-3v-5"/>', title:'اختر مرحلتك الدراسية', text:''}
 ];
-let onbList = [], onbIdx = 0, onbStage = null, onbSched = true;
+let onbList = [], onbIdx = 0, onbStage = null, onbSched = true, onbDir = 1;
 function onbSeen(){ try{ return parseInt(localStorage.getItem('gradesheet_onboard') || '0', 10) || 0; }catch(e){ return 0; } }
 function maybeOnboard(){
   const seen = onbSeen();
   onbList = ONB_SLIDES.filter(x => x.since > seen);
   if(seen > 0) onbList = onbList.filter(x => !x.setup);
-  if(!onbList.length) return;
-  onbIdx = 0; $('onb').hidden = false; document.body.classList.add('onb-lock'); renderOnboarding();
+  if(!onbList.length){ document.documentElement.classList.remove('onb-pending'); return; }
+  onbIdx = 0; try{ const si = parseInt(sessionStorage.getItem('onbIdx') || '0', 10); if(si > 0 && si < onbList.length) onbIdx = si; }catch(e){}
+  $('onb').hidden = false; document.body.classList.add('onb-lock'); renderOnboarding(); document.documentElement.classList.remove('onb-pending');
 }
 function onbCanNext(){ const sl = onbList[onbIdx]; return !(sl.setup === 'stage' && !onbStage); }
 function renderOnboarding(){
   const sl = onbList[onbIdx], body = $('onbBody');
   body.textContent = '';
-  const w = document.createElement('div'); w.className = 'onb-slide';
+  const w = document.createElement('div'); w.className = 'onb-slide ' + (onbDir > 0 ? 'in-r' : 'in-l');
+  try{ sessionStorage.setItem('onbIdx', String(onbIdx)); }catch(e){}
   w.innerHTML = '<div class="onb-ico ' + (sl.anim || '') + '"><svg viewBox="0 0 24 24">' + sl.icon + '</svg><i class="ring"></i></div><h2></h2><p></p>';
   w.querySelector('h2').textContent = sl.title; w.querySelector('p').textContent = sl.text;
   if(!sl.text) w.querySelector('p').remove();
@@ -3547,8 +3609,12 @@ function renderOnboarding(){
     w.appendChild(n);
   }
   body.appendChild(w);
-  const dots = $('onbDots'); dots.textContent = '';
-  onbList.forEach((_, i) => { const d = document.createElement('i'); if(i === onbIdx) d.className = 'on'; dots.appendChild(d); });
+  const dots = $('onbDots');
+  if(dots.children.length !== onbList.length){
+    dots.textContent = '';
+    onbList.forEach((_, i) => { const d = document.createElement('i'); d.onclick = () => onbGo(i); dots.appendChild(d); });
+  }
+  [...dots.children].forEach((d, i) => { d.classList.toggle('on', i === onbIdx); d.classList.toggle('done', i < onbIdx); });
   updateOnbButtons();
 }
 function updateOnbButtons(){
@@ -3557,13 +3623,23 @@ function updateOnbButtons(){
   nx.textContent = last ? 'ابدأ' : 'التالي';
   const ok = onbCanNext();
   nx.disabled = !ok; nx.classList.toggle('dis', !ok);
-  $('onbPrev').style.visibility = onbIdx > 0 ? 'visible' : 'hidden';
+  $('onbPrev').classList.toggle('show', onbIdx > 0); $('onbNav').classList.toggle('first', onbIdx === 0);
   $('onbSkip').style.visibility = last ? 'hidden' : 'visible';
 }
-function prevOnboarding(){ if(onbIdx > 0){ onbIdx--; renderOnboarding(); } }
+function onbGo(i){
+  if(i === onbIdx || i < 0 || i >= onbList.length) return;
+  if(i > onbIdx){ for(let k = onbIdx; k < i; k++){ if(onbList[k].setup === 'stage' && !onbStage) return; } }
+  onbDir = i > onbIdx ? 1 : -1; onbIdx = i; renderOnboarding();
+}
+function skipOnboarding(){
+  const si = onbList.findIndex(x => x.setup === 'stage');
+  if(si < 0){ finishOnboarding(true); return; }
+  onbGo(si);
+}
+function prevOnboarding(){ if(onbIdx > 0){ onbDir = -1; onbIdx--; renderOnboarding(); } }
 function nextOnboarding(){
   if(!onbCanNext()) return;
-  if(onbIdx < onbList.length - 1){ onbIdx++; renderOnboarding(); return; }
+  if(onbIdx < onbList.length - 1){ onbDir = 1; onbIdx++; renderOnboarding(); return; }
   finishOnboarding(false);
 }
 function finishOnboarding(skipped){
@@ -3574,7 +3650,7 @@ function finishOnboarding(skipped){
     if(onbStage && onbStage !== getStage()) patch.stage = onbStage;
     saveProfile(patch);
   }
-  try{ localStorage.setItem('gradesheet_onboard', String(ONB_VERSION)); }catch(e){}
+  try{ localStorage.setItem('gradesheet_onboard', String(ONB_VERSION)); sessionStorage.removeItem('onbIdx'); }catch(e){}
   document.body.classList.remove('onb-lock');
   if(!skipped && onbStage && onbStage !== loadStageBefore){ location.reload(); return; }
   const el = $('onb'); el.classList.add('closing');
@@ -4161,7 +4237,7 @@ document.addEventListener('visibilitychange', () => { if(document.hidden) save()
 
 document.body.classList.add('intro');
 setTimeout(() => document.body.classList.remove('intro'), 2200);
-const APP_VERSION = '0.10.0';
+const APP_VERSION = '0.11.0';
 (function(){ const v = document.getElementById('viewSettings'); if(v){ const p = document.createElement('p'); p.className = 'set-note'; p.style.textAlign = 'center'; p.textContent = 'الإصدار ' + APP_VERSION; v.appendChild(p); } })();
 initLicense();
 applyFeatureFlags();
