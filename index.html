@@ -1136,6 +1136,10 @@ body.onb-lock{overflow:hidden}
 .ev-in input[hidden]{display:none}
 .ev-dt{font-size:12px; color:var(--accent); font-weight:700; margin-top:4px}
 .ev-err{color:var(--red); font-size:13px; font-weight:700; margin-top:8px}
+/* no motion on the records table; no text selection on names */
+#viewRecords,body.intro .section-card,body.intro .section-card tbody tr,body.intro .sections-strip,body.intro .sec-btn{animation:none!important}
+td.name-cell input,td.name-cell .name-wrapper,.section-card td,.section-card th{-webkit-user-select:none; user-select:none; -webkit-touch-callout:none}
+td.name-cell input:not([readonly]){-webkit-user-select:text; user-select:text}
 /* Liquid Glass motion: menus & buttons only */
 .gb-tabs{--ix:0; --iw:0px}
 .gb-ind{position:absolute; top:0; bottom:0; border-radius:20px; background:var(--accent); box-shadow:0 4px 12px color-mix(in srgb, var(--accent) 45%, transparent); transition:inset-inline-start .5s cubic-bezier(.34,1.4,.64,1), width .5s cubic-bezier(.34,1.4,.64,1); z-index:0; pointer-events:none}
@@ -3352,6 +3356,7 @@ document.addEventListener('pointerdown',e=>{ const b=e.target.closest&&e.target.
 
 function showView(v){
   currentView = v;
+  try{ localStorage.setItem('gradesheet_view', v); }catch(e){}
   closeMenu();
   ['records','schedule','calendar','settings'].forEach(n => {
     const el = $('view' + n[0].toUpperCase() + n.slice(1));
@@ -4167,6 +4172,7 @@ updateThemeIcon();
 renderGreeting();
 render();
 maybeOnboard();
+try{ const sv = localStorage.getItem('gradesheet_view'); if(sv && sv !== 'records' && $('view' + sv[0].toUpperCase() + sv.slice(1)) && !(sv === 'schedule' && !scheduleOn())) showView(sv); }catch(e){}
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js', {updateViaCache:'none'}).catch(() => {});
 }
