@@ -1155,6 +1155,10 @@ td.name-cell input:not([readonly]){-webkit-user-select:text; user-select:text}
 .view{animation:fade .35s ease both}
 @media (prefers-reduced-motion:reduce){.gb-ind{transition:none}.btn::after,.gb-sub::after{display:none}}
 
+/* الشريط العلوي وحده ثابت */
+.sticky-table-head{display:none!important}
+.table-wrap.native-sticky thead th{position:static!important}
+.sections-strip{position:relative!important; top:auto!important}
 /* ===== onboarding polish ===== */
 .onb-slide.in-r{animation:onbInR .6s cubic-bezier(.2,.8,.2,1) both}
 .onb-slide.in-l{animation:onbInL .6s cubic-bezier(.2,.8,.2,1) both}
@@ -1883,6 +1887,7 @@ function renderSectionsContainer(){
 function setupStickyTableHeads(){
   if(window.__stickyTableHeadsCleanup) window.__stickyTableHeadsCleanup();
   document.querySelectorAll('.sticky-table-head').forEach(el => el.remove());
+  return; /* الشريط العلوي وحده ثابت */
   const heads = [];
   const wrapCleanups = [];
   const strip = document.querySelector('.sections-strip');
@@ -4235,7 +4240,7 @@ document.addEventListener('visibilitychange', () => { if(document.hidden) save()
 
 document.body.classList.add('intro');
 setTimeout(() => document.body.classList.remove('intro'), 2200);
-const APP_VERSION = '0.11.2';
+const APP_VERSION = '0.11.3';
 (function(){ const v = document.getElementById('viewSettings'); if(v){ const p = document.createElement('p'); p.className = 'set-note'; p.style.textAlign = 'center'; p.textContent = 'الإصدار ' + APP_VERSION; v.appendChild(p); } })();
 initLicense();
 applyFeatureFlags();
