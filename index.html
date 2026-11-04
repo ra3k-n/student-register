@@ -4003,6 +4003,20 @@ document.addEventListener('focusin', e => {
   const t = numTarget(e);
   if(t) openKeypad(t);
 });
+/* حارس تثبيت الشريط: إن تحرّك مع الصفحة لأي سبب في المتصفح يُعاد إلى مكانه */
+let _fy = 0;
+function keepBar(){
+  const tb = document.querySelector('.glass-bar'); if(!tb) return;
+  const want = parseFloat(getComputedStyle(tb).top) || 0;
+  const natural = tb.getBoundingClientRect().top - _fy;
+  const d = Math.round((want - natural) * 10) / 10;
+  if(Math.abs(d - _fy) > 0.5){ _fy = d; tb.style.translate = '0 ' + d + 'px'; }
+}
+let _kb = 0;
+function kbSoon(){ if(_kb) return; _kb = requestAnimationFrame(() => { _kb = 0; keepBar(); }); }
+window.addEventListener('scroll', kbSoon, {passive:true, capture:true});
+window.addEventListener('resize', kbSoon);
+document.addEventListener('wheel', kbSoon, {passive:true});
 function pinTopbar(){
   const vv = window.visualViewport, tb = document.querySelector('.glass-bar');
   if(!vv || !tb) return;
@@ -4235,7 +4249,7 @@ document.addEventListener('visibilitychange', () => { if(document.hidden) save()
 
 document.body.classList.add('intro');
 setTimeout(() => document.body.classList.remove('intro'), 2200);
-const APP_VERSION = '0.11.4';
+const APP_VERSION = '0.11.5';
 (function(){ const v = document.getElementById('viewSettings'); if(v){ const p = document.createElement('p'); p.className = 'set-note'; p.style.textAlign = 'center'; p.textContent = 'الإصدار ' + APP_VERSION; v.appendChild(p); } })();
 initLicense();
 applyFeatureFlags();
