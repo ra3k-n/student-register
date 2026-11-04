@@ -1155,6 +1155,10 @@ td.name-cell input:not([readonly]){-webkit-user-select:text; user-select:text}
 .view{animation:fade .35s ease both}
 @media (prefers-reduced-motion:reduce){.gb-ind{transition:none}.btn::after,.gb-sub::after{display:none}}
 
+/* الشريط العلوي وحده ثابت */
+.sticky-table-head{display:none!important}
+.table-wrap.native-sticky thead th{position:static!important}
+.sections-strip{position:relative!important; top:auto!important}
 /* ===== onboarding polish ===== */
 .onb-slide.in-r{animation:onbInR .6s cubic-bezier(.2,.8,.2,1) both}
 .onb-slide.in-l{animation:onbInL .6s cubic-bezier(.2,.8,.2,1) both}
@@ -1883,6 +1887,7 @@ function renderSectionsContainer(){
 function setupStickyTableHeads(){
   if(window.__stickyTableHeadsCleanup) window.__stickyTableHeadsCleanup();
   document.querySelectorAll('.sticky-table-head').forEach(el => el.remove());
+  return; /* الشريط العلوي وحده ثابت */
   const heads = [];
   const wrapCleanups = [];
   const strip = document.querySelector('.sections-strip');
@@ -4017,6 +4022,24 @@ function kbSoon(){ if(_kb) return; _kb = requestAnimationFrame(() => { _kb = 0; 
 window.addEventListener('scroll', kbSoon, {passive:true, capture:true});
 window.addEventListener('resize', kbSoon);
 document.addEventListener('wheel', kbSoon, {passive:true});
+/* أداة تشخيص: افتح الموقع مع ?debug=1 */
+(function(){
+  if(!/[?&]debug=1/.test(location.search)) return;
+  const d = document.createElement('pre');
+  d.style.cssText = 'position:fixed;bottom:6px;left:6px;z-index:99999;margin:0;padding:8px 10px;background:#000c;color:#0f0;font:12px/1.5 monospace;direction:ltr;text-align:left;border-radius:8px;pointer-events:none;max-width:95vw;white-space:pre-wrap';
+  document.body.appendChild(d);
+  const tick = () => {
+    const b = document.getElementById('glassBar'), st = document.getElementById('sectionsStrip'), vv = window.visualViewport;
+    const cs = getComputedStyle(b), r = b.getBoundingClientRect(), r2 = st ? st.getBoundingClientRect() : {top:0};
+    d.textContent = 'scrollY ' + Math.round(scrollY) + '  dpr ' + devicePixelRatio + '\n' +
+      'innerH ' + innerHeight + '  clientH ' + document.documentElement.clientHeight + '\n' +
+      'vv.offsetTop ' + (vv ? vv.offsetTop.toFixed(1) : '-') + '  vv.pageTop ' + (vv ? vv.pageTop.toFixed(1) : '-') + '  vv.h ' + (vv ? vv.height.toFixed(1) : '-') + '  vv.scale ' + (vv ? vv.scale : '-') + '\n' +
+      'bar: ' + cs.position + ' top=' + r.top.toFixed(1) + ' css.top=' + cs.top + '\n' +
+      'bar.transform=' + cs.transform + ' translate=' + cs.translate + '\n' +
+      'strip top=' + r2.top.toFixed(1);
+  };
+  setInterval(tick, 150); tick();
+})();
 function pinTopbar(){
   const vv = window.visualViewport, tb = document.querySelector('.glass-bar');
   if(!vv || !tb) return;
@@ -4249,7 +4272,7 @@ document.addEventListener('visibilitychange', () => { if(document.hidden) save()
 
 document.body.classList.add('intro');
 setTimeout(() => document.body.classList.remove('intro'), 2200);
-const APP_VERSION = '0.11.5';
+const APP_VERSION = '0.11.6';
 (function(){ const v = document.getElementById('viewSettings'); if(v){ const p = document.createElement('p'); p.className = 'set-note'; p.style.textAlign = 'center'; p.textContent = 'الإصدار ' + APP_VERSION; v.appendChild(p); } })();
 initLicense();
 applyFeatureFlags();
