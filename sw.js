@@ -28,6 +28,8 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
+  if (!request.url.startsWith('http')) return; // تجاهل طلبات إضافات المتصفح (chrome-extension)
+  if (new URL(request.url).origin !== self.location.origin) return;
   if (request.cache === 'no-store') return;
 
   const isPage = request.mode === 'navigate' ||
