@@ -377,7 +377,7 @@ td.name-cell input:not([readonly]){
   background:var(--bg2);
   box-shadow:inset 0 0 0 2px var(--accent);
 }
-td.num-cell{width:48px; background:var(--bg2); font-weight:700; font-size:13px}
+td.num-cell{-webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent; width:48px; background:var(--bg2); font-weight:700; font-size:13px}
 thead th.num-col{width:48px; background:linear-gradient(180deg,#e4e4e4,#d8d8d4); border-left:none}
 :root[data-theme="dark"] thead th.num-col{background:linear-gradient(180deg,#2d3835,#263130)}
 td.num-cell input{
@@ -2114,7 +2114,12 @@ function buildStudentRow(stu, si, ri){
   }
   const tdNum = document.createElement('td');
   tdNum.className = 'num-cell';
-  tdNum.innerHTML = '<input size="1" readonly data-si="' + si + '" data-ri="' + ri + '" data-field="num" value="' + esc(stu.num) + '" inputmode="none" data-num="1">';
+  tdNum.innerHTML = '<input size="1" readonly tabindex="-1" data-si="' + si + '" data-ri="' + ri + '" data-field="num" value="' + esc(stu.num) + '" inputmode="none" style="pointer-events:none">';
+  tdNum.style.cursor = 'pointer';
+  tdNum.addEventListener('click', () => {
+    if(typeof selectModeSections !== 'undefined' && selectModeSections.has(si)){ toggleStudentSelection(si, ri); return; }
+    currentSectionForMenu = si; currentRowForMenu = ri; openRowMenu(si, ri);
+  });
   tr.appendChild(tdNum);
   tr.appendChild(tdName);
 
@@ -3555,7 +3560,7 @@ const ONB_VERSION = 1;
 const ONB_SLIDES = [
   {since:1, anim:'a-table', icon:'<rect class="tb-f" x="3" y="5" width="18" height="14" rx="3"/><line class="tb-l tb-1" x1="9" y1="5" x2="9" y2="19"/><line class="tb-l tb-2" x1="15" y1="5" x2="15" y2="19"/><line class="tb-l tb-3" x1="3" y1="12" x2="21" y2="12"/><circle class="tb-d" cx="6" cy="8.5" r="1"/><circle class="tb-d tb-d2" cx="12" cy="15.5" r="1"/><circle class="tb-d tb-d3" cx="18" cy="8.5" r="1"/>', title:'أهلاً بك في سجل الطلاب', text:'سجّل الدرجات والحضور لكل فصل أو شعبة بسرعة وبساطة، ويعمل التطبيق حتى بدون إنترنت.'},
   {since:1, anim:'a-tap', icon:'<rect x="3" y="5" width="18" height="14" rx="3"/><line x1="9" y1="5" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="19"/><line x1="3" y1="12" x2="21" y2="12"/>', title:'تسجيل الدرجات', text:'اضغط على خانة الدرجة وأدخل الرقم من لوحة الأرقام، ويُحسب المجموع تلقائياً.'},
-  {since:1, anim:'a-hold', icon:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/>', title:'الضغط المطوّل', text:'اضغط مطوّلاً على اسم الطالب أو على الفصل أو الشعبة لتظهر لك قائمة الخيارات.'},
+  {since:1, anim:'a-hold', icon:'<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/>', title:'رقم الطالب والضغط المطوّل', text:'اضغط على رقم الطالب لتظهر لك قائمة الخيارات (ملاحظات، لون، حذف). واضغط مطوّلاً على اسم الطالب أو على الفصل أو الشعبة لقائمة خياراتهما.'},
   {since:1, anim:'a-att', icon:'<circle class="at-c" cx="12" cy="12" r="9"/><polyline class="at-ok" points="8 12.5 11 15.5 16.5 9"/><g class="at-x"><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/><line x1="15.5" y1="8.5" x2="8.5" y2="15.5"/></g><g class="at-clk"><line class="at-h1" x1="12" y1="12" x2="12" y2="7.5"/><line class="at-h2" x1="12" y1="12" x2="15.2" y2="13.8"/></g>', title:'الحضور والغياب', text:'سجّل حاضر أو غائب أو متأخر بضغطة واحدة لكل طالب.'},
   {since:1, anim:'a-wave', icon:'<path d="M12 3a9 9 0 1 0 0 18 2 2 0 0 0 2-2c0-1.2-1-1.6-1-2.6a2 2 0 0 1 2-2h2a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="11" r="1"/>', title:'ملاحظات وألوان', text:'أضف ملاحظة لأي طالب وميّزه بلون خاص من قائمة الضغط المطوّل.'},
   {since:1, anim:'a-undo', icon:'<line x1="4" y1="12" x2="20" y2="12"/><polyline points="14 6 20 12 14 18"/>', title:'رجوع وللأمام', text:'إن حذفت أو عدّلت شيئاً بالخطأ ففي شريط الشعب سهما رجوع وللأمام.'},
@@ -4267,7 +4272,7 @@ document.addEventListener('visibilitychange', () => { if(document.hidden) save()
 
 document.body.classList.add('intro');
 setTimeout(() => document.body.classList.remove('intro'), 2200);
-const APP_VERSION = '0.11.7';
+const APP_VERSION = '0.11.8';
 (function(){ const v = document.getElementById('viewSettings'); if(v){ const p = document.createElement('p'); p.className = 'set-note'; p.style.textAlign = 'center'; p.textContent = 'الإصدار ' + APP_VERSION; v.appendChild(p); } })();
 initLicense();
 applyFeatureFlags();
